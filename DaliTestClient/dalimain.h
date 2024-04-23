@@ -6,17 +6,21 @@
 #include <QStandardItemModel>
 #include <QTimer>
 #include <QLineEdit>
+#include "daliCommandParcer.h"
 
 #include "settingsdialog.h"
 #include "diagnostics.h"
+#include "commandselector.h"
+#include "addressselector.h"
+#include "colourcontrol.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class DaliMain; }
 QT_END_NAMESPACE
 
-//command format: command ID (1 byte), length (1 byte, counts bytes followed, without CRC),
-//              command data(up to 3 bytes), CRC(1 byte, sum of all preceeded bytes witn "!" op. to result
-//command may be addressed either to master itself (command ID = 0) or to slave(s) via master(command ID = 1)
+//Command format: command ID (1 byte), length (1 byte, counts bytes followed, without CRC),
+//              command data(up to 3 bytes), CRC(1 byte, sum of all preceeded bytes with "!" op. to result
+//Command may be addressed either to master itself (command ID = 0) or to slave(s) via master(command ID = 1)
 //
 
 #define MASTER_CMD              0x00
@@ -47,15 +51,19 @@ QT_END_NAMESPACE
 #define WRITE_MEM_LOC_ADDR_BYTE         0xC7
 #define WRITE_MEM_LOC_NO_RPL_ADDR_BYTE  0xC9
 
+#define DT8_ACTIVATE                    0xE2
+
 #define MAX_ADDR      0xFFFFFF
 
 #define SEARCH_ADDRESSING_TAB_INDEX     0
 #define DALI_COMMANDS_TAB_INDEX         1
 #define SCENE_TESTS_TAB_INDEX           2
+#define DAPC_TAB_INDEX                  3
 #define DALI_EXT_COMMANDS_TAB_INDEX     5
 #define DALI_MEM_BANKS_TAB_INDEX        6
 #define DALI_ENERGY_PWR_TAB_INDEX       7
 #define DALI_DIAGNOSTICS_TAB_INDEX      8
+#define DALI_TEST_SEQUENSE_TAB_INDEX    9
 
 #define COMMAND_SEND_TWICE_FLAG         0x80
 #define COMMAND_EXPECT_ANSWER_FLAG      0x40
@@ -65,6 +73,8 @@ QT_END_NAMESPACE
 #define BLUE_COLOR      2
 
 #define LOCK_BYTE_OFFSET    2
+
+#define TEST_SEQUENSE_MAX_COMMAND   128
 
 typedef void(*dali_command_t)(uint8_t opcode);
 
@@ -98,6 +108,14 @@ typedef enum
     EXCHANGE_STATE_ENABLE_WRITE_MEM_CMD,
     EXCHANGE_STATE_WRITE_MEM_CMD,
     EXCHANGE_STATE_SEND_PERIODICALLY,
+    EXCHANGE_STATE_SEND_TEST_SEQUENSE,
+    EXCHANGE_STATE_LOOP_TEST_SEQUENSE,
+    EXCHANGE_STATE_SEND_COLOUR_CMD,
+    EXCHANGE_STATE_SEND_COLOUR_CTRL_CMD,
+    EXCHANGE_STATE_SEND_ENABLE_TYPE8_CMD,
+    EXCHANGE_STATE_DT8_ACTIVATE,
+    EXCHANGE_STATE_SEND_ACTIVATE_CMD,
+    EXCHANGE_STATE_GET_DTR,
 }discover_state_e;
 
 typedef struct
@@ -112,6 +130,18 @@ class DaliMain : public QMainWindow
 {
     Q_OBJECT
 
+    uint16_t nextTestSeqElemID = 0;
+    typedef struct
+    {
+       uint16_t elementID;
+       uint8_t addrByte;
+       uint8_t opcodeByte;
+       QString commandDefStr;
+       bool set_twice;
+       bool answer;
+       bool is_special;
+    }test_seq_cmd_t;
+
 public:
     DaliMain(QWidget *parent = nullptr);
     ~DaliMain();
@@ -123,6 +153,14 @@ private:
 
     QStandardItemModel model;
     QStringList resTabHeaderData = {"Short Address", "Random Address", "Type", "Version", "Connected"};
+
+    QList<quint16> testLoopIterationCnt;
+    QList<quint16> testLoopStartCmdId;
+    QStandardItemModel testTabModel;
+    QStringList testTabHeaderData = {"Время", "Адрес", "Команда", "Ответ"};
+
+    uint16_t nextTestSeqCmd = 0;
+    QList<test_seq_cmd_t> testSeqCmds;
 
     //QStandardItemModel memBank0Model;
     QStringList memBank0HeaderData = {"Адрес", "Описание", "Значение"};
@@ -159,6 +197,17 @@ private:
                                     "Luminaire ident.", "Luminaire ident.", "Luminaire ident.", "Luminaire ident.", "Luminaire ident.", "Luminaire ident.",\
                                     "Luminaire ident.", "Luminaire ident.", "Luminaire ident.", "Luminaire ident.", "Luminaire ident.", "Luminaire ident.",\
                                     "Luminaire ident.", "Luminaire ident.(end)",};
+
+    CommandSelector* commandSel;
+    CommandSelector* extCommandSel;
+    CommandSelector* testSeqCommandSel;
+
+    addressSelector* addrSel;
+    addressSelector* extAddrSel;
+    addressSelector* testSeqAddrSel;
+
+    ColourControl* colourControlWidget;
+
     quint8 memBankSize;
     quint8 memBankCounter;
     quint8 memBankId;
@@ -192,9 +241,8 @@ private:
 
     QTimer* exchangeTimer;
 
-    int red, green, blue;
     uint8_t nextToSend;
-    int hue, sat, val;
+    int red, green, blue;
 
     uint32_t searchAddress;
     uint8_t shortAddress = 0;
@@ -210,101 +258,21 @@ private:
     uint8_t tableEmptyRow = 0;
     uint8_t replyByte;
     uint8_t replyId;
-
+    uint8_t dtr1;
     discover_state_e exchangeState = EXCHANGE_STATE_IDLE;
 
-    QList<QString>daliCommandsStrList =
-    {
-        "0 OFF", "1 UP", "2 DOWN", "3 STEP UP", "4 STEP DOWN",
-        "5 RECALL MAX LEVEL", "6 RECALL MIN LEVEL",
-        "7 STEP DOWN AND OFF", "8 ON AND STEP UP",
-        "9 ENABLE DAPC SEQUENCE", "10 GO TO LAST ACTIVE LEVEL",
-        "16 GO TO SCENE 0", "17 GO TO SCENE 1", "18 GO TO SCENE 2", "19 GO TO SCENE 3",
-        "20 GO TO SCENE 4", "21 GO TO SCENE 5", "22 GO TO SCENE 6", "23 GO TO SCENE 7",
-        "24 GO TO SCENE 8", "25 GO TO SCENE 9", "26 GO TO SCENE 10", "27 GO TO SCENE 11",
-        "28 GO TO SCENE 12", "29 GO TO SCENE 13", "30 GO TO SCENE 14", "31 GO TO SCENE 15",
-        "32 RESET", "33 STORE ACTUAL LEVEL IN THE DTR", "34 SAVE PERSISTENT VARIABLES",
-        "35 SET DTR0 AS OPERATING MODE", "36 RESET MEMORY BANK (DTR0)",
-        "37 IDENTIFY DEVICE", "42 STORE THE DTR AS MAX LEVEL",
-        "43 STORE THE DTR AS MIN LEVEL", "44 STORE THE DTR AS SYSTEM FAILURE LEVEL",
-        "45 STORE THE DTR AS POWERON LEVEL", "46 STORE THE DTR AS FADE TIME",
-        "47 STORE THE DTR AS FADE RATE", "48 STORE THE DTR AS EXTENDED FADE TIME",
-        "64 STORE THE DTR AS SCENE 0", "65 STORE THE DTR AS SCENE 1", "66 STORE THE DTR AS SCENE 2",
-        "67 STORE THE DTR AS SCENE 3", "68 STORE THE DTR AS SCENE 4", "69 STORE THE DTR AS SCENE 5",
-        "70 STORE THE DTR AS SCENE 6", "71 STORE THE DTR AS SCENE 7", "72 STORE THE DTR AS SCENE 8",
-        "73 STORE THE DTR AS SCENE 9", "74 STORE THE DTR AS SCENE 10", "75 STORE THE DTR AS SCENE 11",
-        "76 STORE THE DTR AS SCENE 12", "77 STORE THE DTR AS SCENE 13", "78 STORE THE DTR AS SCENE 14",
-        "79 STORE THE DTR AS SCENE 15", "80 REMOVE FROM SCENE 0", "81 REMOVE FROM SCENE 1",
-        "82 REMOVE FROM SCENE 2", "83 REMOVE FROM SCENE 3", "84 REMOVE FROM SCENE 4",
-        "85 REMOVE FROM SCENE 5", "86 REMOVE FROM SCENE 6", "87 REMOVE FROM SCENE 7",
-        "88 REMOVE FROM SCENE 8", "89 REMOVE FROM SCENE 9", "90 REMOVE FROM SCENE 10",
-        "91 REMOVE FROM SCENE 11", "92 REMOVE FROM SCENE 12", "93 REMOVE FROM SCENE 13",
-        "94 REMOVE FROM SCENE 14", "95 REMOVE FROM SCENE 15", "96 ADD TO GROUP 0",
-        "97 ADD TO GROUP 1", "98 ADD TO GROUP 2", "99 ADD TO GROUP 3", "100 ADD TO GROUP 4",
-        "101 ADD TO GROUP 5", "102 ADD TO GROUP 6", "103 ADD TO GROUP 7", "104 ADD TO GROUP 8",
-        "105 ADD TO GROUP 9", "106 ADD TO GROUP 10", "107 ADD TO GROUP 11", "108 ADD TO GROUP 12",
-        "109 ADD TO GROUP 13", "110 ADD TO GROUP 14", "111 ADD TO GROUP 15",
-        "112 REMOVE FROM GROUP 0", "113 REMOVE FROM GROUP 1", "114 REMOVE FROM GROUP 2",
-        "115 REMOVE FROM GROUP 3", "116 REMOVE FROM GROUP 4", "117 REMOVE FROM GROUP 5",
-        "118 REMOVE FROM GROUP 6", "119 REMOVE FROM GROUP 7", "120 REMOVE FROM GROUP 8",
-        "121 REMOVE FROM GROUP 9", "122 REMOVE FROM GROUP 10", "123 REMOVE FROM GROUP 11",
-        "124 REMOVE FROM GROUP 12", "125 REMOVE FROM GROUP 13", "126 REMOVE FROM GROUP 14",
-        "127 REMOVE FROM GROUP 15", "128 STORE DTR AS SHORT ADDRESS", "129 ENABLE WRITE MEMORY",
-        "144 QUERY STATUS", "145 QUERY CONTROIL GEAR", "146 QUERY LAMP FAILKURE",
-        "147 QUERY LAMP POWER ON", "148 QUERY LIMIT ERROR", "149 QUERY RESET STATE",
-        "150 QUERY MISSING SHORT ADDRESS", "151 QUERY VERSION NUMBER", "152 QUERY CONTENT DTR",
-        "153 QUERY DEVICE TYPE", "154 QUERY PHYSICAL MINIMUM LEVEL", "155 QUERY POWER FAILURE",
-        "156 QUERY CONTENT DTR1", "157 QUERY CONTENT DTR2", "158 QUERY OPERATING MODE",
-        "159 QUERY LIGHT SOURCE TYPE", "160 QUERY ACTUAL LEVEL",
-        "161 QUERY MAX LEVEL", "162 QUERY MIN LEVEL", "163 QUERY POWERON LEVEL",
-        "164 QUERY SYSTEM FAILURE LEVEL", "165 QUERY FADE TIME/FADE RATE",
-        "166 QUERY MANUFACTURER SPECIFIC MODE", "167 QUERY NEXT DEVICE TYPE", "168 QUERY EXTENDED FADE RATE",
-        "170 QUERY CONTROL GEAR FAMILY", "176 QUERY SCENE LEVEL 0",
-        "177 QUERY SCENE LEVEL 1", "178 QUERY SCENE LEVEL 2", "179 QUERY SCENE LEVEL 3",
-        "180 QUERY SCENE LEVEL 4", "181 QUERY SCENE LEVEL 5", "182 QUERY SCENE LEVEL 6",
-        "183 QUERY SCENE LEVEL 7", "184 QUERY SCENE LEVEL 8", "185 QUERY SCENE LEVEL 9",
-        "186 QUERY SCENE LEVEL 10", "187 QUERY SCENE LEVEL 11", "188 QUERY SCENE LEVEL 12",
-        "189 QUERY SCENE LEVEL 13", "190 QUERY SCENE LEVEL 14", "191 QUERY SCENE LEVEL 15",
-        "192 QUERY GROUPS 0-7", "193 QUERY GROUPS 8-15", "194 QUERY RANDOM ADDRESS H",
-        "195 QUERY RANDOM ADDRESS M", "196 QUERY RANDOM ADDRESS L", "197 READ MEMORY LOCATION",
-        "255 QUERY EXTENDED VERSION NUM", "256 TERMINATE", "257 DTR0", "258 INITIALISE",
-        "259 RANDOMISE", "260 COMPARE", "261 WITHDRAW", "264 SEARCHADDRH",
-        "265 SEARCHADDRM", "266 SEARCHADDRL", "267 PROGRAM SHORT ADDRESS",
-        "268 VERIFY SHORT ADDRESS", "269 QUERY SHORT ADDRESS",
-        "272 ENABLE DEVICE TYPE X", "273 DTR1", "274 DTR2", "275 WRITE MEMORY LOCATION",
-        "276 WRITE MEMORY LOCATION - NO REPLY",
-    };
 
-    QList<QString>daliSpec207ExtCommandsStrList =
-    {
-       "224 REFERENCE SYSTEM POWER", "225 ENABLE CURRENT PROTECTOR", "226 DISABLE CURRENT PROTECTOR",
-       "227 SELECT DIMMING CURVE", "228 STORE DTR AS FAST FADE TIME", "237 QUERY GEAR TYPE",
-       "238 QUERY DIMMING CURVE", "239 QUERY POSSIBLE OPERATING MODES", "240 QUERY FEATURES",
-       "241 QUERY FAILURE STATUS", "242 QUERY SHORT CIRCUIT", "243 QUERY OPEN CIRCUIT",
-       "244 QUERY LOAD DECREASE", "245 QUERY LOAD INCREASE", "246 QUERY CURRENT PROTECTOR ACTIVE",
-       "247 QUERY THERMAL SHUT DOWN", "248 QUERY THERMAL OVERLOAD", "249 QUERY REFERENCE RUNNING",
-       "250 QUERY REFERENCE MEASUREMENT FAILED", "251 QUERY CURRENT PROTECTOR ENABLED", "252 QUERY OPERATING MODE",
-       "253 QUERY FAST FADE TIME", "254 QUERY MIN FAST FADE TIME",  "255 QUERY EXTENDED VERSION NUMBER",
-    };
-
-    QList<QString>daliSpec205ExtCommandsStrList =
-    {
-       "224 REFERENCE SYSTEM POWER", "225 SELECT DIMMING CURVE", "238 QUERY_DIMMING_CURVE",
-       "239 QUERY DIMMER STATUS", "240 QUERY FEATURES", "241 QUERY FAILURE STATUS",
-       "242 QUERY DIMMER TEMPERATURE", "243 QUERY RMS SUPPLY VOLTAGE", "244 QUERY SUPPLY FREQUENCY",
-       "245 QUERY RMS LOAD VOLTAGE", "246 QUERY RMS LOAD CURRENT", "247 QUERY REAL LOAD POWER",
-       "248 QUERY LOAD RATING", "249 QUERY REFERENCE RUNNING", "250 QUERY REFERENCE MEASUREMENT FAILED",
-       "255 QUERY EXTENDED VERSION NUMBER",
-    };
 
     // "272 ENABLE DEVICE TYPE 6",
     diagnostics* diag;
     void enableControl(bool isConect);
+    void getAddressStr(quint8 addrByte, QString* res);
+    void updateTestSequenseTable();
     bool openSerialPort();
     void comPortHandleError(QSerialPort::SerialPortError error);
     void comPortReadData();
     bool comPortProcessData();
-    void createTable(QStandardItemModel* model);
+    void createTable(QStringList* headerData, QStandardItemModel* model, QTableView* tabView, quint32 rowCount);
     void createMemBank0Tab(QStandardItemModel* model);
     void createMemBank1Tab(QStandardItemModel* model);
     uint8_t calcCrc(QByteArray* data, uint8_t len);
@@ -316,18 +284,24 @@ private:
     void addTypeVersionToTable();
     void clearTable();
     void sendDAPCData(uint8_t addr, uint8_t opcode);
-    void sendCmd(uint8_t data, QString cmdStr,
-                           bool isGroupBtnChk, uint8_t groupDest, bool isAddrBtnChk, uint8_t addrDest,
-                           QLineEdit* cmdSendDecEdit, QLineEdit* cmdSendHexEdit, quint8 specification);
+    void buildCmd(daliCommandParcer* parcer, uint8_t data, QString cmdStr,
+                  uint8_t addrType, uint8_t groupDest,  uint8_t addrDest);
+    void sendCmd(uint8_t data, QString cmdStr, uint8_t addrType,
+                 uint8_t groupDest, uint8_t addrDest,
+                 QLineEdit* cmdSendDecEdit, QLineEdit* cmdSendHexEdit, quint8 specification);
     void sendEnableDeviceType(quint8 gearType);
     void sendExtendedCommand();
     void storeGearParams();
-    void setRGBVals();
     void updateMemBankTable();
     quint8 getSpec(QString text);
     void readBankBtnClick(uint8_t id, uint8_t* bank, uint8_t size);
     void getTabModelCellStr(QStandardItemModel* model, quint8 offset, quint8 len, QString* resStr);
     void writeBankBtnClick(quint8 id, quint8 offset);
+    void testSeqProcessReply();
+    void testSeqProcessTimeout();
+    void testSeqProcessNoReply();
+    void clearTestSeqTableData();
+    void testSeqSetNextHighLightBackGround(quint16 next);
 private slots:
     void comSetup();
     void comConnect();
@@ -341,11 +315,17 @@ private slots:
     void clearDiscovered();
     void typeVersionBtnClicked();
     void exchangeProcess();
-    void updateDaliDataSetSlider(int sliderVal);
-    void updateExtCmdsDaliDataSetSlider(int sliderVal);
-    void broadcastSendRadioButtonClick();
-    void groupSendRadioButtonClick();
-    void addressSendRadioButtonClick();
+    void addToTestButtonClick();
+    void addExtendedCmdToTestButtonClick();
+    void addTimeoutToTestButtonClick();
+    void addLoopStartToTestButtonClick();
+    void addLoopEndToTestButtonClick();
+    void loadTestSeqButtonClick();
+    void saveTestSeqButtonClick();
+    void removeFromTestButtonClick();
+    void clearAllTestButtonClick();
+    void testRunButtonClick();
+    void testStopButtonClick();
     void sendCmdToPushButtonClicked();
     void sendExtCmdToPushButtonClicked();
     uint8_t generateRandomByte();
@@ -357,11 +337,6 @@ private slots:
     void sliderGreenReleased();
     void updateBlueSlider(int sliderVal);
     void sliderBlueReleased();
-    void colorButtonClick();
-    void updateValueSlider(int);
-    void updateHueSlider(int);
-    void updateSaturationSlider(int);
-    void sliderValHueSaturReleased();
     void sceneSetBtnClicked();
     void sceneGoToBtnClicked();
     void sceneQueryLvlBtnClicked();
@@ -397,5 +372,12 @@ private slots:
     void mBank205ClrLockBtnClicked();
     void mBank206ClrLockBtnClicked();
     void mBank207ClrLockBtnClicked();
+    void bCastAddrCheckBoxClicked();
+    void extCmdsSpecSelChanged();
+
+    void stepWarmerSigProc();
+    void stepCoolerSigProc();
+    void setColourValSigProc();
+    void queryColorValSigProc();
 };
 #endif // DALIMAIN_H

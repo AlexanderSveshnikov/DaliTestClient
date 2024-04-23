@@ -82,6 +82,8 @@ public:
     Settings settings() const;
 public:
     void fillPortsInfo();
+signals:
+    void applyClicked();
 private slots:
     void showPortInfo(int idx);
     void apply();

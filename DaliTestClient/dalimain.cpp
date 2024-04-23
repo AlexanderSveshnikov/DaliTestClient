@@ -1,6 +1,5 @@
 #include "dalimain.h"
 #include "ui_dalimain.h"
-#include "daliCommandParcer.h"
 #include <QDebug>
 #include <QRandomGenerator>
 #include <QColorDialog>
@@ -9,6 +8,8 @@
 #include <QInputDialog>
 #include <QDir>
 #include <QMessageBox>
+#include <QFileDialog>
+#include <QStandardItem>
 
 DaliMain::DaliMain(QWidget *parent)
     : QMainWindow(parent)
@@ -18,9 +19,11 @@ DaliMain::DaliMain(QWidget *parent)
 {
     ui->setupUi(this);
 
-    createTable(&model);
+    createTable(&resTabHeaderData, &model, ui->searchResultsTableView, 64);
     ui->searchResultsTableView->setModel(&model);
     ui->searchResultsTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    clearTestSeqTableData();
 
     diag = new(diagnostics);
     diag->membank_202_init(ui->memBank202TableView);
@@ -45,7 +48,8 @@ DaliMain::DaliMain(QWidget *parent)
     ui->memBank1TableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     connect(ui->comSetupAction, &QAction::triggered, this, &DaliMain::comSetup);
-    connect(ui->comConnectAction, &QAction::triggered, this, &DaliMain::comConnect);
+
+    connect(m_settings, SIGNAL(applyClicked()), this, SLOT(comConnect()));
     connect(ui->comDisconnectAction, &QAction::triggered, this, &DaliMain::comDisconnect);
 
     connect(ui->findDeviceButton, &QPushButton::clicked, this, &DaliMain::findMasterDevice);
@@ -68,23 +72,52 @@ DaliMain::DaliMain(QWidget *parent)
     connect(exchangeTimer, SIGNAL(timeout()), this, SLOT(exchangeTimerShot()));
     exchangeTimer->setSingleShot(false);
 
-    for(int i = 0; i < daliCommandsStrList.size(); i++)
-        ui->daliCommandsComboBox->addItem(daliCommandsStrList[i]);
+    CommandSelector::populateBySpecs(ui->specSelComboBox);
 
-    ui->specSelComboBox->addItem("207");
-    ui->specSelComboBox->addItem("205");
     connect(ui->specSelComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(specSelChanged()));
-
-    for(int i = 0; i < daliSpec207ExtCommandsStrList.size(); i++)          //spec. 207
-        ui->daliExtCmdsComboBox->addItem(daliSpec207ExtCommandsStrList[i]);
-
-    connect(ui->daliDataSetSlider, SIGNAL(valueChanged(int)), SLOT(updateDaliDataSetSlider(int)));
-    connect(ui->daliExtCmdsDataSetSlider, SIGNAL(valueChanged(int)), SLOT(updateExtCmdsDaliDataSetSlider(int)));
     connect(ui->sendExtCmdEnableDeviceType, &QPushButton::clicked, this, &DaliMain::sendExtCmdEnableDeviceTypeClicked);
+    connect(ui->addToTestButton, SIGNAL(clicked()), this, SLOT(addToTestButtonClick()));
+    connect(ui->addExtendedCmdToTestButton, SIGNAL(clicked()), this, SLOT(addExtendedCmdToTestButtonClick()));
+    connect(ui->removeFromTestButton, SIGNAL(clicked()), this, SLOT(removeFromTestButtonClick()));
+    connect(ui->clearAllTestButton, SIGNAL(clicked()), this, SLOT(clearAllTestButtonClick()));
+    connect(ui->testRunButton, SIGNAL(clicked()), this, SLOT(testRunButtonClick()));
+    connect(ui->testStopButton, SIGNAL(clicked()), this, SLOT(testStopButtonClick()));
+    connect(ui->loadTestSeqButton, SIGNAL(clicked()), this, SLOT(loadTestSeqButtonClick()));
+    connect(ui->saveTestSeqButton, SIGNAL(clicked()), this, SLOT(saveTestSeqButtonClick()));
+    connect(ui->addTimeoutToTestButton, SIGNAL(clicked()), this, SLOT(addTimeoutToTestButtonClick()));
+    connect(ui->addLoopStartToTestButton, SIGNAL(clicked()), this, SLOT(addLoopStartToTestButtonClick()));
+    connect(ui->addLoopEndToTestButton, SIGNAL(clicked()), this, SLOT(addLoopEndToTestButtonClick()));
 
-    connect(ui->broadcastSendRadioButton, SIGNAL(clicked()), this, SLOT(broadcastSendRadioButtonClick()));
-    connect(ui->groupSendRadioButton, SIGNAL(clicked()), this, SLOT(groupSendRadioButtonClick()));
-    connect(ui->addressSendRadioButton, SIGNAL(clicked()), this, SLOT(addressSendRadioButtonClick()));
+    commandSel = new CommandSelector(this);
+    ui->commandSelectLayout->addWidget(commandSel);
+    commandSel->fillByCommands();
+
+    extCommandSel = new CommandSelector(this);
+    ui->extCommandSelectLayout->addWidget(extCommandSel);
+    extCommandSel->specSelUpdate("207");
+    connect(extCommandSel, SIGNAL(specChangedSgn()), this, SLOT(extCmdsSpecSelChanged()));
+
+    testSeqCommandSel = new CommandSelector(this);
+    ui->testCommandSelectlLayout->addWidget(testSeqCommandSel);
+    testSeqCommandSel->fillByCommands();
+    testSeqCommandSel->addExtendedCmdsSelector();
+
+    addrSel = new addressSelector(this);
+    ui->commandAddressSetlLayout->addWidget(addrSel);
+
+    extAddrSel = new addressSelector(this);
+    ui->extCommandAddressSetlLayout->addWidget(extAddrSel);
+
+    testSeqAddrSel = new addressSelector(this);
+    ui->testSeqAddressSetLayout->addWidget(testSeqAddrSel);
+    testSeqAddrSel->setVisible(true);
+
+    colourControlWidget = new ColourControl(this);
+    ui->colourCtrlLayout->addWidget(colourControlWidget);
+    connect(colourControlWidget, SIGNAL(stepWarmerSig()), this, SLOT(stepWarmerSigProc()));
+    connect(colourControlWidget, SIGNAL(stepCoolerSig()), this, SLOT(stepCoolerSigProc()));
+    connect(colourControlWidget, SIGNAL(setColourValSig()), this, SLOT(setColourValSigProc()));
+    connect(colourControlWidget, SIGNAL(queryColorValSig()), this, SLOT(queryColorValSigProc()));
 
     connect(ui->sendCmdToPushButton, &QPushButton::clicked, this, &DaliMain::sendCmdToPushButtonClicked);
     connect(ui->sendExtCmdToPushButton, &QPushButton::clicked, this, &DaliMain::sendExtCmdToPushButtonClicked);
@@ -103,25 +136,9 @@ DaliMain::DaliMain(QWidget *parent)
    connect(ui->blueSlider, SIGNAL(valueChanged(int)), SLOT(updateBlueSlider(int)));
    connect(ui->blueSlider, SIGNAL(sliderReleased()), SLOT(sliderBlueReleased()));
 
-   connect(ui->valueSlider, SIGNAL(valueChanged(int)), SLOT(updateValueSlider(int)));
-   connect(ui->valueSlider, SIGNAL(sliderReleased()), SLOT(sliderValHueSaturReleased()));
-
-   connect(ui->hueSlider, SIGNAL(valueChanged(int)), SLOT(updateHueSlider(int)));
-   connect(ui->hueSlider, SIGNAL(sliderReleased()), SLOT(sliderValHueSaturReleased()));
-
-   connect(ui->saturationSlider, SIGNAL(valueChanged(int)), SLOT(updateSaturationSlider(int)));
-   connect(ui->saturationSlider, SIGNAL(sliderReleased()), SLOT(sliderValHueSaturReleased()));
-
-   ui->valueEdit->setText(QString::number(ui->valueSlider->value()));
-   ui->hueEdit->setText(QString::number(ui->hueSlider->value()));
-   ui->saturationEdit->setText(QString::number(ui->saturationSlider->value()));
-
    ui->redEdit->setStyleSheet("QLineEdit { background-color: #faa8a5; }");
    ui->greenEdit->setStyleSheet("QLineEdit { background-color: #90ee90; }");
    ui->blueEdit->setStyleSheet("QLineEdit { background-color: #add8e6; }");
-   connect(ui->colorButton, &QPushButton::clicked, this, &DaliMain::colorButtonClick);
-
-   ui->colorLabel->setAutoFillBackground(true);
 
    connect(ui->sceneSetButton, &QPushButton::clicked, this, &DaliMain::sceneSetBtnClicked);
    connect(ui->sceneGoToButton, &QPushButton::clicked, this, &DaliMain::sceneGoToBtnClicked);
@@ -131,7 +148,7 @@ DaliMain::DaliMain(QWidget *parent)
    connect(ui->fastFadeTimeSetBtn, &QPushButton::clicked, this, &DaliMain::fastFadeTimeSetBtnClicked);
    connect(ui->extendedFadeTimeSetBtn, &QPushButton::clicked, this, &DaliMain::extendedFadeTimeSetBtnClicked);
 
-
+   connect(ui->bCastAddrCheckBox, SIGNAL(clicked()), this, SLOT(bCastAddrCheckBoxClicked()));
 
    connect(ui->memBank202ReadButton, &QPushButton::clicked, this, &DaliMain::mBank202ReadBtnClicked);
    connect(ui->memBank203ReadButton, &QPushButton::clicked, this, &DaliMain::mBank203ReadBtnClicked);
@@ -164,59 +181,96 @@ DaliMain::~DaliMain()
 {
     delete diag;
     delete ui;
+    delete addrSel;
+    delete extAddrSel;
+    delete testSeqAddrSel;
+    delete commandSel;
+    delete extCommandSel;
+    delete testSeqCommandSel;
 }
 
-void DaliMain::broadcastSendRadioButtonClick()
+void DaliMain::extCmdsSpecSelChanged()
 {
-    ui->addressSendRadioButton->setChecked(false);
-    ui->groupSendRadioButton->setChecked(false);
+    QString currTxt = ui->specSelComboBox->currentText();
+    if(currTxt == "202")
+    {
+       ui->sendExtCmdEnableDeviceType->setText("Разр. у-во типа 1 (Self-cont. emerg. lighting)");
+    }
+    else if(currTxt == "205")
+    {
+        ui->sendExtCmdEnableDeviceType->setText("Разрешить устройство типа 4 (Лампа накал.)");
+    }
+    else if(currTxt == "207")
+    {
+       ui->sendExtCmdEnableDeviceType->setText("Разрешить устройство типа 6 (LED светильник)");
+    }
+    else if(currTxt == "209")
+    {
+       ui->sendExtCmdEnableDeviceType->setText("Разрешить устройство типа 8 (Colour control)");
+    }
 }
 
-void DaliMain::groupSendRadioButtonClick()
+void DaliMain::buildCmd(daliCommandParcer* parcer, uint8_t data, QString cmdStr,
+                        uint8_t addrType, uint8_t groupDest,  uint8_t addrDest)
 {
-    ui->addressSendRadioButton->setChecked(false);
-    ui->broadcastSendRadioButton->setChecked(false);
-}
-
-void DaliMain::addressSendRadioButtonClick()
-{
-    ui->groupSendRadioButton->setChecked(false);
-    ui->broadcastSendRadioButton->setChecked(false);
-}
-
-void DaliMain::sendCmd(uint8_t data, QString cmdStr,
-                       bool isGroupBtnChk, uint8_t groupDest, bool isAddrBtnChk, uint8_t addrDest,
-                       QLineEdit* cmdSendDecEdit, QLineEdit* cmdSendHexEdit, quint8 specification)
-{
-     qDebug() << "tabSelected:" << QString::number(ui->tabWidget->currentIndex());
-
-    daliCommandParcer parcer;
-
     int delimIx = cmdStr.indexOf(' ');
     cmdStr.chop(cmdStr.size() - delimIx);
-    cmdId = cmdStr.toInt();
-    if(cmdId <= 0xFF)   //standart commands
+
+    bool dapcFlag = false;
+    if(cmdStr == "-") //DAPC
+    {
+        dapcFlag = true;
+    }
+    else
+    {
+        cmdId = cmdStr.toInt();
+    }
+
+    if((cmdId <= 0xFF) || dapcFlag)  //standart commands
     {
         uint8_t cmdType = TYPE_BROADCAST;
         uint8_t destination = 0;
-        if(isGroupBtnChk)
+        if(addrType == addressSelector::GROUP_ADDR)
         {
             cmdType = TYPE_GROUP;
             destination = groupDest;
         }
-        else if(isAddrBtnChk)
+        else if(addrType == addressSelector::BROADCAST_UNADDRESSED)
+        {
+            cmdType = TYPE_BROADCAST_UNADDR;
+        }
+        else if(addrType == addressSelector::INDIVIDUAL_ADDR)
         {
             cmdType = TYPE_ADDRESS;
             destination = addrDest;
         }
-        address_byte = parcer.getStandartCmdAddrByte(cmdType, destination, false);
-        opcode_byte = cmdId;
+        address_byte = parcer->getStandartCmdAddrByte(cmdType, destination, dapcFlag);
+        if(dapcFlag)
+        {
+            opcode_byte = data;
+        }
+        else
+        {
+            opcode_byte = cmdId;
+        }
     }
     else        //special commands
     {
-        address_byte = parcer.getSpecialCmdAddrByteFromNumber(cmdId);
-        opcode_byte = parcer.getSpecialCmdOpcodeByte(cmdId, data);
+        address_byte = parcer->getSpecialCmdAddrByteFromNumber(cmdId);
+        opcode_byte = parcer->getSpecialCmdOpcodeByte(cmdId, data);
     }
+
+}
+
+void DaliMain::sendCmd(uint8_t data, QString cmdStr, uint8_t addrType,
+                       uint8_t groupDest, uint8_t addrDest,
+                       QLineEdit* cmdSendDecEdit, QLineEdit* cmdSendHexEdit, quint8 specification)
+{
+    qDebug() << "tabSelected:" << QString::number(ui->tabWidget->currentIndex());
+
+    daliCommandParcer parcer;
+
+    buildCmd(&parcer, data, cmdStr, addrType, groupDest, addrDest);
 
     cmdSendDecEdit->setText(QString::number(address_byte) + " " + QString::number(opcode_byte));
     cmdSendHexEdit->setText(QString("%1").arg(address_byte, 2, 16, QLatin1Char( '0' )) + " " + QString("%1").arg(opcode_byte, 2, 16, QLatin1Char( '0' )));
@@ -242,38 +296,41 @@ quint8 DaliMain::getSpec(QString text)
     quint8 rval = 0;
     if(text == "207")
         rval = SPEC_LED_LAMP;
+    else if(text == "202")
+        rval = SPEC_SELF_CONTAINED_EMERGENCY_LIGHTNING;
     else if(text == "205")
         rval = SPEC_INCANDESCENT_LAMP;
+    else if(text == "209")
+        rval = SPEC_COLOUR_CONTROL;
     return rval;
 }
 
 void DaliMain::sendCmdToPushButtonClicked()
 {
-    uint8_t data = ui->dataDecEdit->text().toInt();
-    QString cmdStr = ui->daliCommandsComboBox->currentText();
-    bool isGroupBtnChk = ui->groupSendRadioButton->isChecked();
-    uint8_t groupDest = ui->groupSendSpinBox->text().toInt();
-    bool isAddrBtnChk = ui->addressSendRadioButton->isChecked();
-    uint8_t addrDest =  ui->addressSendSpinBox->text().toInt();
+    uint8_t data = commandSel->getValue(); //ui->dataDecEdit->text().toInt();
+    QString cmdStr; // = ui->daliCommandsComboBox->currentText();
+    commandSel->getCommand(&cmdStr);
+    uint8_t addrType = addrSel->getAddrType();
+    uint8_t groupDest = addrSel->getGroupAddress();
+    uint8_t addrDest =  addrSel->getAddress();
     QLineEdit* cmdSendDecEdit = ui->commandSendDecEdit;
     QLineEdit* cmdSendHexEdit = ui->commandSendHexEdit;
     quint8 spec = getSpec(ui->specSelComboBox->currentText());
-    sendCmd(data, cmdStr, isGroupBtnChk, groupDest, isAddrBtnChk, addrDest, cmdSendDecEdit, cmdSendHexEdit, spec);
+    sendCmd(data, cmdStr, addrType,  groupDest, addrDest, cmdSendDecEdit, cmdSendHexEdit, spec);
 }
 
 void DaliMain::sendExtendedCommand()
 {
-    uint8_t data = ui->dataExtCmdsDecEdit->text().toInt();
-    QString cmdStr = ui->daliExtCmdsComboBox->currentText();
-
-    bool isGroupBtnChk = ui->groupSendExtCmdRadioButton->isChecked();
-    uint8_t groupDest = ui->groupSendExtCmdSpinBox->text().toInt();
-    bool isAddrBtnChk = ui->addressSendExtCmdRadioButton->isChecked();
-    uint8_t addrDest =  ui->addressSendExtCmdSpinBox->text().toInt();
+    uint8_t data = extCommandSel->getValue(); //ui->dataExtCmdsDecEdit->text().toInt();
+    QString cmdStr; // = ui->daliExtCmdsComboBox->currentText();
+    extCommandSel->getCommand(&cmdStr);
+    uint8_t addrType = extAddrSel->getAddrType();
+    uint8_t groupDest = extAddrSel->getGroupAddress();
+    uint8_t addrDest =  extAddrSel->getAddress();
     QLineEdit* cmdSendDecEdit = ui->extCommandSendDecEdit;
     QLineEdit* cmdSendHexEdit = ui->extCommandSendHexEdit;
     quint8 spec = getSpec(ui->specSelComboBox->currentText());
-    sendCmd(data, cmdStr, isGroupBtnChk, groupDest, isAddrBtnChk, addrDest, cmdSendDecEdit, cmdSendHexEdit, spec);
+    sendCmd(data, cmdStr, addrType, groupDest, addrDest, cmdSendDecEdit, cmdSendHexEdit, spec);
 }
 
 void DaliMain::sendExtCmdToPushButtonClicked()
@@ -281,8 +338,15 @@ void DaliMain::sendExtCmdToPushButtonClicked()
     if(ui->autoPrependCmdCheckBox->isChecked())
     {
         quint8 gearType = 6;
-        if(205 == getSpec(ui->specSelComboBox->currentText()))
+        int spec = getSpec(ui->specSelComboBox->currentText());
+        if(205 == spec)
             gearType = 4;
+        else if(202 == spec)
+            gearType = 1;
+        else if(209 == spec)
+            gearType = 8;
+        else if(0 == spec) //Error!
+            return;
         slaveCmd(ENABLE_DEVICE_TYPE_OPCODE, gearType, EXCHANGE_STATE_SEND_EXTEND_CMD, false, false, true);
         exchangeTimer->stop();
         exchangeTimer->start(700);
@@ -296,13 +360,12 @@ void DaliMain::sendExtCmdToPushButtonClicked()
 void DaliMain::sendEnableDeviceType(quint8 gearType)
 {
     QString cmdStr = "272 ENABLE DEVICE TYPE 6";
-    bool isGroupBtnChk = ui->groupSendExtCmdRadioButton->isChecked();
-    uint8_t groupDest = ui->groupSendExtCmdSpinBox->text().toInt();
-    bool isAddrBtnChk = ui->addressSendExtCmdRadioButton->isChecked();
-    uint8_t addrDest =  ui->addressSendExtCmdSpinBox->text().toInt();
+    uint8_t addrType = addrSel->getAddrType();
+    uint8_t groupDest = addrSel->getGroupAddress();
+    uint8_t addrDest =  addrSel->getAddress();
     QLineEdit* cmdSendDecEdit = ui->extCommandSendDecEdit;
     QLineEdit* cmdSendHexEdit = ui->extCommandSendHexEdit;
-    sendCmd(gearType, cmdStr, isGroupBtnChk, groupDest, isAddrBtnChk, addrDest, cmdSendDecEdit, cmdSendHexEdit, SPEC_LED_LAMP);
+    sendCmd(gearType, cmdStr, addrType, groupDest, addrDest, cmdSendDecEdit, cmdSendHexEdit, SPEC_LED_LAMP);
 }
 
 void DaliMain::sendExtCmdEnableDeviceTypeClicked()
@@ -310,32 +373,428 @@ void DaliMain::sendExtCmdEnableDeviceTypeClicked()
    quint8 gearType = 6;
    if(205 == getSpec(ui->specSelComboBox->currentText()))
        gearType = 4;
+   else if(202 == getSpec(ui->specSelComboBox->currentText()))
+       gearType = 1;
+   else if(209 == getSpec(ui->specSelComboBox->currentText()))
+       gearType = 8;
    sendEnableDeviceType(gearType);
 }
 
-void DaliMain::updateDaliDataSetSlider(int sliderVal)
+void DaliMain::getAddressStr(quint8 addrByte, QString* res)
 {
-    ui->dataDecEdit->setText(QString::number(sliderVal));
-    ui->dataHexEdit->setText(QString("%1").arg(sliderVal, 2, 16, QLatin1Char( '0' )));
-}
-
-void DaliMain::updateExtCmdsDaliDataSetSlider(int sliderVal)
-{
-    ui->dataExtCmdsDecEdit->setText(QString::number(sliderVal));
-    ui->dataExtCmdsHexEdit->setText(QString("%1").arg(sliderVal, 2, 16, QLatin1Char( '0' )));
-}
-
-void DaliMain::createTable(QStandardItemModel* model)
-{
-    model->setColumnCount(5);
-    model->setRowCount(64);  //maximal bus nodes
-    for(quint8 i = 0; i < resTabHeaderData.size(); i++)
+    if((addrByte & 0xFE) == 0xFE)
     {
-        model->setHeaderData(i, Qt::Horizontal, resTabHeaderData.at(i));
+        *res = "BroadCast";
+    }
+    else if(((addrByte & 0xFD) == 0xFD) || ((addrByte & 0xFD) == 0xFC))
+    {
+        *res = "BrCast UnAddr.";
+    }
+    else if((addrByte & 0xE0) == 0x80)
+    {
+        addrByte = (addrByte >> 1) & 0x0F;
+        *res = "Group Addr: " + QString::number(addrByte);
+    }
+    else
+    {
+       addrByte = (addrByte >> 1) & 0x3F;
+       *res = QString::number(addrByte);
+    }
+}
+
+void DaliMain::updateTestSequenseTable()
+{
+    QString addrStr;
+    for(int i = 0; i < testSeqCmds.size(); i++)
+    {
+        if(testSeqCmds[i].commandDefStr.contains("Timeout"))
+        {
+            addrStr = "(value in ms)";
+        }
+        else if ((testSeqCmds[i].commandDefStr.contains("LoopStart")) || (testSeqCmds[i].commandDefStr.contains("LoopEnd")))
+        {
+            addrStr = "";
+        }
+        else
+        {
+            if(!testSeqCmds[i].is_special)
+            {
+                getAddressStr(testSeqCmds[i].addrByte, &addrStr);
+            }
+            else
+            {
+                addrStr = "Special";
+            }
+        }
+        testTabModel.setData(testTabModel.index(i, 1, QModelIndex()), addrStr);
+        QString commandRowData = testSeqCmds[i].commandDefStr;
+        if((!testSeqCmds[i].commandDefStr.contains("Timeout")) &&\
+           (!testSeqCmds[i].commandDefStr.contains("LoopStart")) &&\
+           (!testSeqCmds[i].commandDefStr.contains("LoopEnd")))
+              commandRowData += \
+                " 0x" + QString("%1").arg(testSeqCmds[i].addrByte, 2, 16, QLatin1Char('0')) + \
+                " 0x" + QString("%1").arg(testSeqCmds[i].opcodeByte, 2, 16, QLatin1Char('0'));
+        testTabModel.setData(testTabModel.index(i, 2, QModelIndex()), commandRowData);
+    }
+    ui->testSeqTableView->setModel(&testTabModel);
+}
+
+void DaliMain::loadTestSeqButtonClick()
+{
+    QString  fileName = QFileDialog::getOpenFileName(this, QObject::tr("New File"), "C:/", QObject::tr("Files (*.dat)"));
+    if (fileName.isEmpty())
+    {
+        qDebug() << "file name is empty";
+        return;
+    }
+    else
+    {
+        QFile file(fileName);
+        if(!file.open(QIODevice::ReadOnly)) {   //|QFile::Truncate
+            qDebug() << "file open error";
+            return;
+        }
+        QDataStream in(&file);
+        testSeqCmds.clear();
+        while(!in.atEnd())
+        {
+            test_seq_cmd_t newTestSeqCmd;
+            in >> newTestSeqCmd.elementID;
+            in >> newTestSeqCmd.addrByte;
+            in >> newTestSeqCmd.opcodeByte;
+            in >> newTestSeqCmd.commandDefStr;
+            in >> newTestSeqCmd.set_twice;
+            in >> newTestSeqCmd.answer;
+            in >> newTestSeqCmd.is_special;;
+            testSeqCmds.append(newTestSeqCmd);
+        }
+        file.close();
+        clearTestSeqTableData();
+        updateTestSequenseTable();
+    }
+}
+
+void DaliMain::saveTestSeqButtonClick()
+{
+    QString  fileName = QFileDialog::getSaveFileName(this, QObject::tr("New File"), "C:/", QObject::tr("Files (*.dat)"));
+    if (fileName.isEmpty())
+    {
+           qDebug() << "file name is empty";
+           return;
+    }
+    else
+    {
+        QFile file(fileName);
+        if(!file.open(QIODevice::WriteOnly)) {   //QIODevice::Append||QFile::Truncate
+            qDebug() << "file open error";
+            return;
+        }
+        QDataStream out(&file);
+        for(auto i = 0; i < testSeqCmds.size(); i++)
+        {
+            out << testSeqCmds[i].elementID;
+            out << testSeqCmds[i].addrByte;
+            out << testSeqCmds[i].opcodeByte;
+            out << testSeqCmds[i].commandDefStr;
+            out << testSeqCmds[i].set_twice;
+            out << testSeqCmds[i].answer;
+            out << testSeqCmds[i]. is_special;
+        }
+        file.close();
+    }
+}
+
+void DaliMain::addToTestButtonClick()
+{
+    if(testSeqCmds.size() >= TEST_SEQUENSE_MAX_COMMAND)
+    {
+        QMessageBox msg;
+        msg.setText("Макс. кол-во команд определено. Больше нельзя добавить");
+        msg.exec();
+        return;
     }
 
-    ui->searchResultsTableView->setStyleSheet("QHeaderView::section { background-color:lightGray }");
-    ui->searchResultsTableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    daliCommandParcer parcer;
+
+    uint8_t data = testSeqCommandSel->getValue();
+    QString cmdStr;
+    testSeqCommandSel->getCommand(&cmdStr);
+
+    uint8_t addrType = testSeqAddrSel->getAddrType();
+    uint8_t groupDest = testSeqAddrSel->getGroupAddress();
+    uint8_t addrDest =  testSeqAddrSel->getAddress();
+
+    int delimIx = cmdStr.indexOf(' ');
+    QString cmdIDStr = cmdStr;
+    cmdIDStr.chop(cmdStr.size() - delimIx);
+    int cmd_id = cmdIDStr.toInt();
+
+    buildCmd(&parcer, data, cmdStr, addrType, groupDest, addrDest);
+
+    test_seq_cmd_t cmd;
+    cmd.elementID = nextTestSeqElemID;
+    nextTestSeqElemID++;
+    cmd.commandDefStr = cmdStr.right(cmdStr.size() - delimIx - 1);
+    cmd.addrByte = address_byte;
+    cmd.opcodeByte = opcode_byte;
+    cmd.set_twice = parcer.checkCmdIssueTwice(cmd_id, 207);
+    cmd.answer = parcer.checkCmdNeedAnswer(cmd_id, 207);
+    cmd.is_special = parcer.checkCmdSpecial(cmd_id);
+    testSeqCmds.append(cmd);
+    updateTestSequenseTable();
+}
+
+void DaliMain::addExtendedCmdToTestButtonClick()
+{
+    if(testSeqCmds.size() >= TEST_SEQUENSE_MAX_COMMAND)
+    {
+        QMessageBox msg;
+        msg.setText("Макс. кол-во команд определено. Больше нельзя добавить");
+        msg.exec();
+        return;
+    }
+    daliCommandParcer parcer;
+    test_seq_cmd_t cmd;
+
+    //1. Send "Enable device type ..." command
+    cmd.elementID = nextTestSeqElemID;
+    nextTestSeqElemID++;
+    cmd.commandDefStr = " ";
+    cmd.addrByte = ENABLE_DEVICE_TYPE_OPCODE;
+
+    cmd.opcodeByte = testSeqCommandSel->extendedCmdsGetOpCode();
+
+    cmd.commandDefStr = "Enable device type " + QString::number(cmd.opcodeByte);
+
+    cmd.set_twice = false;
+    cmd.answer = false;
+    cmd.is_special = true;
+    testSeqCmds.append(cmd);
+    updateTestSequenseTable();
+
+    //2. Send command itself
+    uint8_t data = testSeqCommandSel->getValue(); // ui->dataTestCmdsDecEdit->text().toInt();
+    QString cmdStr;
+    testSeqCommandSel->getExtendedCommand(&cmdStr);
+
+    uint8_t addrType = testSeqAddrSel->getAddrType();
+    uint8_t groupDest = testSeqAddrSel->getGroupAddress();
+    uint8_t addrDest = testSeqAddrSel->getAddress();
+
+    int delimIx = cmdStr.indexOf(' ');
+    QString cmdIDStr = cmdStr;
+    cmdIDStr.chop(cmdStr.size() - delimIx);
+    int cmd_id = cmdIDStr.toInt();
+
+    buildCmd(&parcer, data, cmdStr, addrType, groupDest, addrDest);
+
+    cmd.elementID = nextTestSeqElemID;
+    nextTestSeqElemID++;
+    cmd.commandDefStr = cmdStr.right(cmdStr.size() - delimIx - 1);
+    cmd.addrByte = address_byte;
+    cmd.opcodeByte = opcode_byte;
+    cmd.set_twice = parcer.checkCmdIssueTwice(cmd_id, 207);
+    cmd.answer = parcer.checkCmdNeedAnswer(cmd_id, 207);
+    cmd.is_special = parcer.checkCmdSpecial(cmd_id);
+    testSeqCmds.append(cmd);
+    updateTestSequenseTable();
+}
+
+void DaliMain::addTimeoutToTestButtonClick()
+{
+    test_seq_cmd_t cmd;
+    cmd.elementID = nextTestSeqElemID;
+    nextTestSeqElemID++;
+    float tOutVal = ui->testSeqToutSpinBox->value();
+    cmd.commandDefStr = "Timeout " + QString::number(tOutVal*1000);
+    cmd.addrByte = 0;
+    cmd.opcodeByte = 0;
+    cmd.set_twice = false;
+    cmd.answer = false;
+    cmd.is_special = false;
+    testSeqCmds.append(cmd);
+    updateTestSequenseTable();
+}
+
+void DaliMain::addLoopStartToTestButtonClick()
+{
+    test_seq_cmd_t cmd;
+    cmd.elementID = nextTestSeqElemID;
+    nextTestSeqElemID++;
+    int IterCntVal = ui->testSeqIterCntSpinBox->value();
+    cmd.commandDefStr = "LoopStart " + QString::number(IterCntVal);
+    cmd.addrByte = 0;
+    cmd.opcodeByte = 0;
+    cmd.set_twice = false;
+    cmd.answer = false;
+    cmd.is_special = false;
+    testSeqCmds.append(cmd);
+    updateTestSequenseTable();
+
+    //ui->addLoopStartToTestButton->setEnabled(false);
+    //ui->addLoopEndToTestButton->setEnabled(true);
+}
+
+void DaliMain::addLoopEndToTestButtonClick()
+{
+    test_seq_cmd_t cmd;
+    cmd.elementID = nextTestSeqElemID;
+    nextTestSeqElemID++;
+    cmd.commandDefStr = "LoopEnd";
+    cmd.addrByte = 0;
+    cmd.opcodeByte = 0;
+    cmd.set_twice = false;
+    cmd.answer = false;
+    cmd.is_special = false;
+    testSeqCmds.append(cmd);
+    updateTestSequenseTable();
+
+    //ui->addLoopStartToTestButton->setEnabled(true);
+    //ui->addLoopEndToTestButton->setEnabled(false);
+}
+
+void DaliMain::removeFromTestButtonClick()
+{
+    QMessageBox Warning;
+    auto rowList = ui->testSeqTableView->selectionModel()->selectedRows();
+    if(rowList.count() > 0)
+    {
+        int rowNumber = rowList.constFirst().row();
+        if(rowNumber < testSeqCmds.size())
+        {
+            test_seq_cmd_t cmdToRemove = testSeqCmds.at(rowNumber);
+          //  if(cmdToRemove.commandDefStr.contains("LoopStart"))
+          //  {
+          //      ui->addLoopStartToTestButton->setEnabled(true);
+          //      ui->addLoopEndToTestButton->setEnabled(false);
+          //  }
+           // if(cmdToRemove.commandDefStr.contains("LoopEnd"))
+          //  {
+          //      ui->addLoopStartToTestButton->setEnabled(false);
+          //      ui->addLoopEndToTestButton->setEnabled(true);
+           // }
+            testSeqCmds.removeAt(rowNumber);
+            clearTestSeqTableData();
+            updateTestSequenseTable();
+        }
+        else
+        {
+            Warning.setText("Empty row selected!");
+            Warning.exec();
+        }
+    }
+    else
+    {
+
+       Warning.setText("Select row first!");
+       Warning.exec();
+    }
+}
+
+void DaliMain::clearTestSeqTableData()
+{
+    testTabModel.clear();
+    createTable(&testTabHeaderData, &testTabModel, ui->testSeqTableView, TEST_SEQUENSE_MAX_COMMAND);
+    ui->testSeqTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->testSeqTableView->setSelectionMode(QAbstractItemView::SingleSelection);  //Only one row could be selected
+    ui->testSeqTableView->setModel(&testTabModel);
+    ui->testSeqTableView->setColumnWidth(0, 90);
+    ui->testSeqTableView->setColumnWidth(1, 120);
+    ui->testSeqTableView->setColumnWidth(2, 200);
+    ui->testSeqTableView->setColumnWidth(3, 70);
+    ui->testSeqTableView->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding));
+    ui->testSeqTableView->setMinimumWidth(510);
+    ui->testSeqTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+}
+
+void DaliMain::clearAllTestButtonClick()
+{
+    clearTestSeqTableData();
+    testSeqCmds.clear();
+
+   // ui->addLoopStartToTestButton->setEnabled(true);
+   // ui->addLoopEndToTestButton->setEnabled(false);
+}
+
+void DaliMain::testRunButtonClick()
+{
+    testLoopStartCmdId.clear();
+    testLoopIterationCnt.clear();
+
+    ui->testRunButton->setEnabled(false);
+    ui->testStopButton->setEnabled(true);
+
+    if(ui->tabWidget->currentIndex() != DALI_TEST_SEQUENSE_TAB_INDEX)
+    {
+        qDebug() << "ERROR!!! Wrong tabSeq Tab =" << QString::number(ui->tabWidget->currentIndex());
+        return;
+    }
+    else if(testSeqCmds[0].commandDefStr.contains("LoopEnd"))
+    {
+        qDebug() << "ERROR!!! Wrong LoopEnd Command";
+        return;
+    }
+    else if(testSeqCmds[0].commandDefStr.contains("LoopStart"))
+    {
+        int delimIx = testSeqCmds[0].commandDefStr.indexOf(' ');
+        QString IterCntStr = \
+            testSeqCmds[0].commandDefStr.right(testSeqCmds[0].commandDefStr.size() - delimIx - 1);
+        testLoopIterationCnt.append(IterCntStr.toInt());
+        testLoopStartCmdId.append(0);  //List with "LoopStart" indexes (for nested loops)
+        exchangeState = EXCHANGE_STATE_LOOP_TEST_SEQUENSE;
+        exchangeTimer->start(10);
+    }
+    else
+    {
+        slaveCmd(testSeqCmds[0].addrByte, testSeqCmds[0].opcodeByte, EXCHANGE_STATE_SEND_TEST_SEQUENSE,\
+            testSeqCmds[0].set_twice, testSeqCmds[0].answer, testSeqCmds[0].is_special);
+        QTime currTm = QTime::currentTime();
+        testTabModel.setData(testTabModel.index(0, 0, QModelIndex()), currTm.toString("hh:mm:ss,zzz"));
+
+        exchangeTimer->start(1000);
+    }
+    nextTestSeqCmd = 0;
+    testSeqSetNextHighLightBackGround(nextTestSeqCmd+1);
+}
+
+void DaliMain::testStopButtonClick()
+{
+    ui->testRunButton->setEnabled(true);
+    ui->testStopButton->setEnabled(false);
+
+    testLoopStartCmdId.clear();
+    testLoopIterationCnt.clear();
+    exchangeTimer->stop();
+}
+
+void DaliMain::testSeqProcessReply()
+{
+    QString replyStr = QString("%1").arg(replyByte, 2, 16, QLatin1Char('0'));
+    testTabModel.setData(testTabModel.index(nextTestSeqCmd - 1, 3, QModelIndex()), replyStr);
+}
+
+void DaliMain::testSeqProcessTimeout()
+{
+   testTabModel.setData(testTabModel.index(nextTestSeqCmd - 1, 3, QModelIndex()), "TimeOut");
+}
+
+void DaliMain::testSeqProcessNoReply()
+{
+   testTabModel.setData(testTabModel.index(nextTestSeqCmd - 1, 3, QModelIndex()), "No Reply");
+}
+
+void DaliMain::createTable(QStringList* headerData, QStandardItemModel* model, QTableView* tabView, quint32 rowCount)
+{
+    model->setColumnCount(headerData->size());
+    model->setRowCount(rowCount);  //maximal bus nodes
+    for(quint8 i = 0; i < headerData->size(); i++)
+    {
+        model->setHeaderData(i, Qt::Horizontal, headerData->at(i));
+    }
+
+    //ui->searchResultsTableView
+    tabView->setStyleSheet("QHeaderView::section { background-color:lightGray }");
+    tabView->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 }
 
 void DaliMain::getTabModelCellStr(QStandardItemModel* model, quint8 offset, quint8 len, QString* resStr)
@@ -348,6 +807,53 @@ void DaliMain::getTabModelCellStr(QStandardItemModel* model, quint8 offset, quin
         char symb = (char)(hexStr.toInt(&ok, 16));
         *resStr += QString(symb);
     }
+}
+
+void DaliMain::stepWarmerSigProc()
+{
+    slaveCmd(ENABLE_DEVICE_TYPE_OPCODE, 8, EXCHANGE_STATE_SEND_COLOUR_CMD, false, false, true);
+
+    address_byte = colourControlWidget->getDaliAddress();  //next(main) command definitions
+    opcode_byte = 233;
+
+    exchangeTimer->stop();
+    exchangeTimer->start(700);
+}
+
+void DaliMain::stepCoolerSigProc()
+{
+    slaveCmd(ENABLE_DEVICE_TYPE_OPCODE, 8, EXCHANGE_STATE_SEND_COLOUR_CMD, false, false, true);
+
+    address_byte = colourControlWidget->getDaliAddress();  //next(main) command definitions
+    opcode_byte = 232;
+
+    exchangeTimer->stop();
+    exchangeTimer->start(150);
+}
+
+void DaliMain::setColourValSigProc()
+{
+    quint16 colorTemp = colourControlWidget->getColourTemperature();
+
+    quint8 dtr0 = (quint8)colorTemp;
+    dtr1 = (quint8)(colorTemp>>8);
+
+    address_byte = colourControlWidget->getDaliAddress();
+    opcode_byte = 231;
+
+    slaveCmd(DTR0_ADDR_BYTE, dtr0, EXCHANGE_STATE_SEND_COLOUR_CTRL_CMD, false, false, true);
+    exchangeTimer->stop();
+    exchangeTimer->start(150);
+}
+
+void DaliMain::queryColorValSigProc()
+{
+    address_byte = colourControlWidget->getDaliAddress();
+    opcode_byte = 250;
+
+    slaveCmd(DTR0_ADDR_BYTE, 2, EXCHANGE_STATE_SEND_ENABLE_TYPE8_CMD, false, false, true); //write "2" to DTR0
+    exchangeTimer->stop();
+    exchangeTimer->start(150);
 }
 
 void DaliMain::memBank1TableCellSelect(const QModelIndex index)
@@ -509,6 +1015,13 @@ void DaliMain::readBank1BtnClick()
 
 void DaliMain::writeBankBtnClick(quint8 id, quint8 offset)
 {
+   if(memBankId == 1)
+   {
+        QStandardItemModel* mBankModel = diag->getMembank1Model();
+        quint8 valToWrite = ui->bank1ValueSpinBox->value();
+        mBankModel->setData(mBankModel->index(offset, 2, QModelIndex()), "0x" + QString("%1").arg(valToWrite, 2, 16, QLatin1Char('0')));
+        ui->memBank1TableView->setModel(mBankModel);
+   }
    slaveCmd(DTR1_ADDR_BYTE, id, EXCHANGE_STATE_SEND_DTR0_MEM_CMD, false, false, true);
    memBankId = id;
    memBankOffset = offset;
@@ -557,7 +1070,7 @@ void DaliMain::createMemBank1Tab(QStandardItemModel* model)
     }
     ui->memBank1TableView->setStyleSheet("QHeaderView::section { background-color:lightGray }");
     ui->memBank1TableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    ui->memBank1TableView->setModel(diag->getMembank1Model());
+    ui->memBank1TableView->setModel(model);
     ui->memBank1TableView->setColumnWidth(0, 10);
     ui->memBank1TableView->setColumnWidth(1, 200);
 }
@@ -663,6 +1176,8 @@ void DaliMain::comPortReadData()
         rdData = m_serial->readAll();
         QString reply;
         reply.clear();
+
+
         reply = "got " + QString::number(bts) + " bytes, ";
         for(int i = 0; i < bts; i++)
         {
@@ -682,7 +1197,11 @@ void DaliMain::comPortReadData()
         ui->monitorEdit->append(reply);
 
         if(comPortProcessData())
+        {
+            int timeRemain = waitRxTimer->remainingTime();
+            qDebug() << "TimeRemain = " + QString::number(timeRemain);
             waitRxTimer->stop();
+        }
     }
 }
 
@@ -714,7 +1233,7 @@ void DaliMain::enableControl(bool isConnect)
                                           ui->sceneGoToButton, ui->sceneQueryLevelButton,
                                           ui->fadeTimeSetBtn, ui->fastFadeTimeSetBtn,
                                           ui->extendedFadeTimeSetBtn, ui->findDeviceButton,
-                                          ui->colorButton, ui->memBank1FlashSaveBtn,
+                                           ui->memBank1FlashSaveBtn,                            //ui->colorButton,
                                           ui->memBank202ReadButton, ui->memBank203ReadButton,
                                           ui->memBank204ReadButton, ui->mBank205ReadButton,
                                           ui->mBank206ReadButton, ui->mBank207ReadButton,
@@ -723,7 +1242,8 @@ void DaliMain::enableControl(bool isConnect)
                                           ui->memBank206SetLockButton, ui->memBank207SetLockButton,
                                           ui->memBank202ClrLockButton, ui->memBank203ClrLockButton,
                                           ui->memBank204ClrLockButton, ui->memBank205ClrLockButton,
-                                          ui->memBank206ClrLockButton, ui->memBank207ClrLockButton};
+                                          ui->memBank206ClrLockButton, ui->memBank207ClrLockButton,
+                                          ui->testRunButton};
 
     QList<QPushButton*>::iterator ctrlBtnsIterator;
     for (ctrlBtnsIterator = controlButtons.begin(); ctrlBtnsIterator != controlButtons.end(); ctrlBtnsIterator++)
@@ -733,7 +1253,7 @@ void DaliMain::enableControl(bool isConnect)
     }
 
     QList<QSlider*>controlSliders = {ui->broadcastSlider, ui->redSlider, ui->greenSlider, ui->blueSlider,
-                                     ui->hueSlider, ui->saturationSlider, ui->valueSlider};
+                                     }; //ui->hueSlider, ui->saturationSlider, ui->valueSlider
 
     QList<QSlider*>::iterator ctrlSlidersIterator;
     for (ctrlSlidersIterator = controlSliders.begin(); ctrlSlidersIterator != controlSliders.end(); ctrlSlidersIterator++)
@@ -741,6 +1261,7 @@ void DaliMain::enableControl(bool isConnect)
         QSlider* sldr = *ctrlSlidersIterator;
         sldr->setEnabled(isConnect);
     }
+    colourControlWidget->setEnabled(isConnect);
 }
 
 void DaliMain::comDisconnect()
@@ -809,6 +1330,7 @@ bool DaliMain::comPortProcessData()
     replyId = rdData.at(0);
 
     int tabIndex = ui->tabWidget->currentIndex();
+    qDebug() << "rx: tab IX = " + QString::number(tabIndex);
 
     switch(replyId)
     {
@@ -821,11 +1343,37 @@ bool DaliMain::comPortProcessData()
             if(tabIndex == DALI_COMMANDS_TAB_INDEX)
             {
                 if(0xFF == replyByte)
-                    ui->replyEdit->setText("Yes");
+                {
+                    if((cmdId >= QUERY_SCENE_LEVEL_0) && (cmdId <= QUERY_SCENE_LEVEL_15))
+                    {
+                        ui->replyEdit->setText("MASK");
+                    }
+                    else if((cmdId >= QUERY_ACTUAL_LEVEL) && (cmdId <= QUERY_SYSTEM_FAILURE_LEVEL))
+                    {
+                        ui->replyEdit->setText("level = 255");
+                    }
+                    else if((cmdId >= QUERY_RANDOM_ADDR_H) && (cmdId <= QUERY_RANDOM_ADDR_L))
+                    {
+                        ui->replyEdit->setText("0xFF(255)");
+                    }
+                    else if (cmdId == QUERY_FADE_TIME_RATE)
+                    {
+                        ui->replyEdit->setText("rawdata:0xFF");
+                    }
+                    else
+                    {
+                        ui->replyEdit->setText("Yes");
+                    }
+                }
                 else
                     ui->replyEdit->setText(QString("%1").arg(replyByte, 2, 16, QLatin1Char('0')));
                 ui->replyDecEdit->setText(QString::number(replyByte));
                 ui->replyHexEdit->setText("0x" + QString("%1").arg(replyByte, 2, 16, QLatin1Char('0')));
+
+                daliCommandParcer parcer;
+                QString explainStr;
+                parcer.explainReply(cmdId, replyByte, &explainStr);
+                ui->replyExplaintEdit->setText(explainStr);
 
                 if(ui->periodSendCheckBox->isChecked())
                    sendCmdToPushButtonClicked();
@@ -838,10 +1386,23 @@ bool DaliMain::comPortProcessData()
                     ui->extReplyEdit->setText(QString("%1").arg(replyByte, 2, 16, QLatin1Char('0')));
                 ui->extReplyDecEdit->setText(QString::number(replyByte));
                 ui->extReplyHexEdit->setText("0x" + QString("%1").arg(replyByte, 2, 16, QLatin1Char('0')));
+
+                daliCommandParcer parcer;
+                QString explainStr;
+                quint8 spec = getSpec(ui->specSelComboBox->currentText());
+                parcer.explainExtReply(cmdId, replyByte, &explainStr, spec);
+                ui->extReplyExplaintEdit->setText(explainStr);
             }
             else if(tabIndex == SCENE_TESTS_TAB_INDEX)
             {
                 ui->sceneValSpinBox->setValue(replyByte);
+            }
+            else if(tabIndex == DAPC_TAB_INDEX)
+            {
+                if(opcode_byte == 250)
+                {
+                    colourControlWidget->receiveColourValue(replyByte);
+                }
             }
             else if(tabIndex == SEARCH_ADDRESSING_TAB_INDEX)
             {
@@ -855,8 +1416,11 @@ bool DaliMain::comPortProcessData()
                 else if(query_type == QUERY_VERSION_NUMBER)
                 {
                    gear[gear_idx].version = replyByte;
-                   qDebug() << "save tversion devId=" + QString::number(gear_idx) + " ver=" + QString::number(replyByte);
+                   qDebug() << "save version devId=" + QString::number(gear_idx) + " ver=" + QString::number(replyByte);
                    gear_idx++;
+                   shortAddress++;
+                   if(shortAddress == 64)
+                       shortAddress = 0;
                 }
             }
             else if(tabIndex == DALI_MEM_BANKS_TAB_INDEX)
@@ -917,6 +1481,12 @@ bool DaliMain::comPortProcessData()
                     }
                 }
             }
+            else if(tabIndex == DALI_TEST_SEQUENSE_TAB_INDEX)
+            {
+                testSeqProcessReply();
+                exchangeTimer->stop();
+                exchangeTimer->start(125); //next step after 125 mS
+            }
             else
             {
                 qDebug() << "tab Ix = " + QString::number(tabIndex);
@@ -929,13 +1499,29 @@ bool DaliMain::comPortProcessData()
                 ui->replyDecEdit->setText("");
                 ui->replyHexEdit->setText("");
             }
+            else if(tabIndex == SEARCH_ADDRESSING_TAB_INDEX)
+            {
+                exchangeTimer->stop();
+                exchangeTimer->start(125); //next step after 125 mS
+            }
             else if(tabIndex == DALI_EXT_COMMANDS_TAB_INDEX)
             {
                 ui->extReplyEdit->setText("");
                 ui->extReplyDecEdit->setText("");
                 ui->extReplyHexEdit->setText("");
             }
-
+            else if(tabIndex == DALI_TEST_SEQUENSE_TAB_INDEX)
+            {
+                testSeqProcessNoReply();
+                exchangeTimer->stop();
+                exchangeTimer->start(125); //next step after 125 mS
+            }
+            else if(tabIndex == DALI_TEST_SEQUENSE_TAB_INDEX)
+            {
+                testSeqProcessNoReply();
+                exchangeTimer->stop();
+                exchangeTimer->start(125); //next step after 125 mS
+            }
             qDebug() << "SLAVE_EMPTY_CMD";
             break;
         case SLAVE_REPLY_TOUT_CMD:
@@ -958,6 +1544,20 @@ bool DaliMain::comPortProcessData()
                     qDebug() << "Membanks read command fails";
                     //memBankCounter = 255; //Stop exchange
                 }
+            }
+            else if(tabIndex == SEARCH_ADDRESSING_TAB_INDEX)
+            {
+                if((exchangeState == EXCHANGE_STATE_GET_VERSION) || (exchangeState == EXCHANGE_STATE_GET_TYPE))
+                {
+                    qDebug() << "Can't get gear type/version";
+                    gear_idx = gear_max_idx; //Stop searching
+                }
+            }
+            if(tabIndex == DALI_TEST_SEQUENSE_TAB_INDEX)
+            {
+                testSeqProcessTimeout();
+                exchangeTimer->stop();
+                exchangeTimer->start(125); //next step after 125 mS
             }
             qDebug() << "SLAVE_REPLY_TOUT_CMD";
             break;
@@ -1039,6 +1639,7 @@ void DaliMain::slaveCmd(quint8 addrByte, quint8 opCode, discover_state_e next_st
     waitRx = true;      //expect for reply from master
     rdData.clear();
     waitRxTimer->start(600);
+    qDebug() << "start waitRx, 600 mS";
 
     QString request = "send: " ;
     for(int i = 0; i < 5; i++)
@@ -1061,6 +1662,10 @@ void DaliMain::searchAddrStart()
     query_type = 0;
     ui->discoverButton->setEnabled(false);
     ui->discoverStopButton->setEnabled(true);
+
+    shortAddr = ui->startAddrSpinBox->value();
+    shortAddress = shortAddr;
+
     if(ui->newInitCheckBox->isChecked())
     {
        clearTable();
@@ -1157,12 +1762,30 @@ void DaliMain::clearTable()
         model.setData(model.index(i, 4, QModelIndex()), "");
     }
     tableEmptyRow = 0;
-    shortAddress = 0;
 }
 
 void DaliMain::storeGearParams()
 {
     gear[shortAddr].random_addr = searchAddress;
+}
+
+
+void DaliMain::testSeqSetNextHighLightBackGround(quint16 next)
+{
+    int currItemID = nextTestSeqCmd;
+    if(nextTestSeqCmd > 0)
+        currItemID = nextTestSeqCmd - 1;
+    QStandardItem* currItem = testTabModel.item(currItemID, 2);
+    currItem->setBackground(Qt::white);
+    nextTestSeqCmd = next;
+    if(nextTestSeqCmd > 0)
+        currItemID = nextTestSeqCmd - 1;
+    if(nextTestSeqCmd < testSeqCmds.size())
+    {
+        currItem = testTabModel.item(currItemID, 2);
+        currItem->setBackground(Qt::green); //(QColor(0,0,0,0)); //(Qt::yellow);
+
+    }
 }
 
 void DaliMain::exchangeProcess()
@@ -1202,7 +1825,7 @@ void DaliMain::exchangeProcess()
             maxAddress = MAX_ADDR;
             searchAddress = (maxAddress + minAddress)/2;
 
-            ui->searchInfoEdit->append("Device ID from: " + QString::number(shortAddr) + "\r\n");
+            ui->searchInfoEdit->append("Start Assigning From: " + QString::number(shortAddr) + "\r\n");
             replyByte = 0x00;
             slaveCmd(RANDOMISE_ADDR_BYTE, opCode, EXCHANGE_STATE_SEARCHADDRH_CMD, true, false, true);
             break;
@@ -1258,12 +1881,23 @@ void DaliMain::exchangeProcess()
                }
                else
                {
-                   if(searchAddress == MAX_ADDR - 1)
+                   if(searchAddress == MAX_ADDR - 1) //ALL GEARS FOUND
                    {
                         //Stop the search process with "Terminate"
-                        slaveCmd(TERMINATE_ADDR_BYTE, (uint8_t)(0x00), EXCHANGE_STATE_GET_TYPE, false, false, true);
+                        quint8 prog_addr = (shortAddress<<1)|0x01;
+                        if(prog_addr & 0x80)
+                            prog_addr &= ~0x80;
+                        slaveCmd(TERMINATE_ADDR_BYTE, prog_addr, EXCHANGE_STATE_GET_TYPE, false, false, true);
                         gear_idx = 0;
-                        gear_max_idx = shortAddress;
+                        if(shortAddress > shortAddr)
+                            gear_max_idx = shortAddress - shortAddr;
+                        else
+                            gear_max_idx = 64 - (shortAddr - shortAddress);
+
+                        shortAddress = shortAddr;  //one more loop
+
+                        qDebug() << "gear idx = " + QString::number(gear_idx) + "gear max idx = " + QString::number(gear_max_idx);
+
                         ui->devCountEdit->setText(QString::number(gear_max_idx));
                         ui->searchInfoEdit->append("No more gear found, read type/version"); //terminate");
                    }
@@ -1289,6 +1923,7 @@ void DaliMain::exchangeProcess()
         case EXCHANGE_STATE_GET_TYPE:
             if(gear_idx == gear_max_idx)
             {
+                qDebug() << "gear idx = gear max idx";
                 addTypeVersionToTable();
                 gear_idx = 0;
                 exchangeStop();
@@ -1297,10 +1932,13 @@ void DaliMain::exchangeProcess()
             else
             {
                 query_type = QUERY_DEVICE_TYPE;
-                quint8 prog_addr = (gear_idx<<1)|0x01;
+                quint8 prog_addr = (shortAddress<<1)|0x01;
                 if(prog_addr & 0x80)
                     prog_addr &= ~0x80;
                 slaveCmd(prog_addr, QUERY_DEVICE_TYPE, EXCHANGE_STATE_GET_VERSION, false, true, false);
+
+                qDebug() << "Get version, shortAddress = " + QString::number(shortAddress);
+
                 exchangeTimer->stop();
                 exchangeTimer->start(700);
             }
@@ -1308,7 +1946,7 @@ void DaliMain::exchangeProcess()
         case EXCHANGE_STATE_GET_VERSION:
             {
                 query_type = QUERY_VERSION_NUMBER;
-                quint8 prog_addr = (gear_idx<<1)|0x01;
+                quint8 prog_addr = (shortAddress<<1)|0x01;
                 if(prog_addr & 0x80)
                     prog_addr &= ~0x80;
                 slaveCmd(prog_addr, QUERY_VERSION_NUMBER, EXCHANGE_STATE_GET_TYPE, false, true, false);
@@ -1348,6 +1986,9 @@ void DaliMain::exchangeProcess()
 
                 if(shortAddress < 64)
                     shortAddress++;
+                else
+                    shortAddress = 0;
+
             }
             else if(replyId == SLAVE_REPLY_TOUT_CMD)
             {
@@ -1383,7 +2024,14 @@ void DaliMain::exchangeProcess()
         case EXCHANGE_STATE_SET_FADE_TIME_CMD:
             {
                 quint8 addr = ui->sceneAddrSpinBox->value();
-                addr = (addr<<1)|0x01;
+                if(ui->bCastAddrCheckBox->isChecked())
+                {
+                    addr = 0xFF;
+                }
+                else
+                {
+                    addr = (addr<<1)|0x01;
+                }
                 slaveCmd(addr, SET_FADE_TIME_OPCODE, EXCHANGE_STATE_IDLE, true, false, false);
             }
             break;
@@ -1393,19 +2041,65 @@ void DaliMain::exchangeProcess()
         case EXCHANGE_STATE_SET_FAST_FADE_TIME_CMD:
             {
                 quint8 addr = ui->sceneAddrSpinBox->value();
-                addr = (addr<<1)|0x01;
+                if(ui->bCastAddrCheckBox->isChecked())
+                {
+                    addr = 0xFF;
+                }
+                else
+                {
+                    addr = (addr<<1)|0x01;
+                }
                 slaveCmd(addr, SPEC_207_SET_FAST_FADE_TIME, EXCHANGE_STATE_IDLE, true, false, false);
             }
             break;
         case EXCHANGE_STATE_SET_EXTENDED_FADE_TIME_CMD:
             {
                 quint8 addr = ui->sceneAddrSpinBox->value();
-                addr = (addr<<1)|0x01;
+                if(ui->bCastAddrCheckBox->isChecked())
+                {
+                    addr = 0xFF;
+                }
+                else
+                {
+                    addr = (addr<<1)|0x01;
+                }
                 slaveCmd(addr, SET_EXTENDED_FADE_TIME_OPCODE, EXCHANGE_STATE_IDLE, true, false, false);
             }
             break;
         case EXCHANGE_STATE_SEND_EXTEND_CMD:
             sendExtendedCommand(); //next state IDLE defined inside func body
+            break;
+        case EXCHANGE_STATE_SEND_COLOUR_CTRL_CMD:
+            slaveCmd(DTR1_ADDR_BYTE, dtr1, EXCHANGE_STATE_SEND_ENABLE_TYPE8_CMD, false, false, true);
+            exchangeTimer->start(150);
+            break;
+        case EXCHANGE_STATE_SEND_ENABLE_TYPE8_CMD:
+            slaveCmd(ENABLE_DEVICE_TYPE_OPCODE, 8, EXCHANGE_STATE_SEND_COLOUR_CMD, false, false, true);
+            exchangeTimer->start(150);
+            break;
+        case EXCHANGE_STATE_SEND_COLOUR_CMD:
+            if(opcode_byte == 250)
+            {
+                slaveCmd(address_byte, opcode_byte, EXCHANGE_STATE_GET_DTR, false, true, false);
+            }
+            else
+            {
+                if(opcode_byte != 231)
+                    slaveCmd(address_byte, opcode_byte, EXCHANGE_STATE_IDLE, false, false, true);//next state IDLE defined inside func body
+                else
+                    slaveCmd(address_byte, opcode_byte, EXCHANGE_STATE_DT8_ACTIVATE, false, false, true);
+            }
+            exchangeTimer->start(150);
+            break;
+        case EXCHANGE_STATE_GET_DTR:
+            slaveCmd(address_byte, QUERY_CONTENT_DTR0, EXCHANGE_STATE_IDLE, false, true, false);
+            break;
+        case EXCHANGE_STATE_DT8_ACTIVATE:
+            slaveCmd(ENABLE_DEVICE_TYPE_OPCODE, 8, EXCHANGE_STATE_SEND_ACTIVATE_CMD, false, false, true);
+            exchangeTimer->start(150);
+            break;
+        case EXCHANGE_STATE_SEND_ACTIVATE_CMD:
+            slaveCmd(address_byte, DT8_ACTIVATE, EXCHANGE_STATE_IDLE, false, false, false);
             break;
         case EXCHANGE_STATE_SEND_DAPC_CMD:
             if(nextToSend == GREEN_COLOR)
@@ -1541,11 +2235,81 @@ void DaliMain::exchangeProcess()
             break;
         case EXCHANGE_STATE_SEND_PERIODICALLY:
             sendCmdToPushButtonClicked();
+            break;
+        case EXCHANGE_STATE_SEND_TEST_SEQUENSE:
+            if(nextTestSeqCmd < testSeqCmds.size())
+            {
+                if(testSeqCmds[nextTestSeqCmd].commandDefStr.contains("LoopStart")) //nested loop
+                {
+                    int delimIx = testSeqCmds[nextTestSeqCmd].commandDefStr.indexOf(' ');
+                    QString IterCntStr = \
+                    testSeqCmds[nextTestSeqCmd].commandDefStr.right(testSeqCmds[nextTestSeqCmd].commandDefStr.size() - delimIx - 1);
 
+                    testLoopIterationCnt.append(IterCntStr.toInt());
+                    testLoopStartCmdId.append(nextTestSeqCmd + 1);
+
+                    testSeqSetNextHighLightBackGround(nextTestSeqCmd+1);
+
+                    exchangeTimer->start(10);
+                }
+                else if(testSeqCmds[nextTestSeqCmd].commandDefStr.contains("LoopEnd"))
+                {
+                    testLoopIterationCnt.last()--;
+                    if(testLoopIterationCnt.last() == 0)
+                    {
+                        testLoopIterationCnt.removeLast();
+                        testLoopStartCmdId.removeLast();
+
+                        testSeqSetNextHighLightBackGround(nextTestSeqCmd+1);
+
+                        exchangeTimer->start(10);
+                    }
+                    else
+                    {
+                        testSeqSetNextHighLightBackGround(testLoopStartCmdId.last());
+
+                        slaveCmd(testSeqCmds[nextTestSeqCmd].addrByte, testSeqCmds[nextTestSeqCmd].opcodeByte, EXCHANGE_STATE_SEND_TEST_SEQUENSE,\
+                            testSeqCmds[nextTestSeqCmd].set_twice, testSeqCmds[nextTestSeqCmd].answer, testSeqCmds[nextTestSeqCmd].is_special);
+                        QTime currTm = QTime::currentTime();
+                        testTabModel.setData(testTabModel.index(nextTestSeqCmd, 0, QModelIndex()), currTm.toString("hh:mm:ss,zzz"));
+                        exchangeTimer->start(1000);
+                    }
+                }
+                else if(testSeqCmds[nextTestSeqCmd].commandDefStr.contains("Timeout"))
+                {
+                    int delimIx = testSeqCmds[nextTestSeqCmd].commandDefStr.indexOf(' ');
+                    QString testSeqTimeoutStr = \
+                    testSeqCmds[nextTestSeqCmd].commandDefStr.right(testSeqCmds[nextTestSeqCmd].commandDefStr.size() - delimIx - 1);
+                    int testSeqTimeout = testSeqTimeoutStr.toInt();
+
+                    testSeqSetNextHighLightBackGround(nextTestSeqCmd+1);
+
+                    exchangeTimer->start(testSeqTimeout);
+                }
+                else
+                {
+                    slaveCmd(testSeqCmds[nextTestSeqCmd].addrByte, testSeqCmds[nextTestSeqCmd].opcodeByte, EXCHANGE_STATE_SEND_TEST_SEQUENSE,\
+                        testSeqCmds[nextTestSeqCmd].set_twice, testSeqCmds[nextTestSeqCmd].answer, testSeqCmds[nextTestSeqCmd].is_special);
+                    QTime currTm = QTime::currentTime();
+                    testTabModel.setData(testTabModel.index(nextTestSeqCmd, 0, QModelIndex()), currTm.toString("hh:mm:ss,zzz"));
+
+                    testSeqSetNextHighLightBackGround(nextTestSeqCmd+1);
+
+                    exchangeTimer->start(1000);
+                }
+            }
+            else
+            {
+                qDebug() << "End of test sequense";
+                ui->testRunButton->setEnabled(true);
+                ui->testStopButton->setEnabled(false);
+                exchangeTimer->stop();
+            }
             break;
         default:
 
             break;
+
     }
 }
 
@@ -1613,105 +2377,6 @@ void DaliMain::sliderBlueReleased()
     sendDAPCData(addrByte, val);
 }
 
-void DaliMain::setRGBVals()
-{
-    QColor color;
-    color.setHsv(hue, sat, val, 255);
-    color.getRgb(&red, &green, &blue, nullptr);
-    if(red >= 255)
-        red = 254;
-    if(green >= 255)
-        green = 254;
-    if(blue >= 255)
-        blue = 254;
-    ui->redSlider->setValue(red);
-    ui->greenSlider->setValue(green);
-    ui->blueSlider->setValue(blue);
-}
-
-void DaliMain::updateValueSlider(int sliderVal)
-{
-    ui->valueEdit->setText(QString::number(sliderVal) + "%");
-    val =  (sliderVal*255)/100;
-    setRGBVals();
-}
-
-void DaliMain::updateHueSlider(int sliderVal)
-{
-     ui->hueEdit->setText(QString::number(sliderVal) + "%");
-     hue =  (sliderVal*255)/100;
-     setRGBVals();
-}
-
-void DaliMain::updateSaturationSlider(int sliderVal)
-{
-     ui->saturationEdit->setText(QString::number(sliderVal) + "%");
-     sat =  (sliderVal*255)/100;
-     setRGBVals();
-}
-
-void DaliMain::sliderValHueSaturReleased()
-{
-    QColor color(red, green, blue, 255);
-    QPalette pal;
-    pal.setColor(QPalette::Window, color);
-    ui->colorLabel->setPalette(pal);
-
-    if(red >= 255)
-        red = 254;
-    if(green >= 255)
-        green = 254;
-    if(blue >= 255)
-        blue = 254;
-    quint8 addrByte = ui->redAddrSpinBox->value();
-    sendDAPCData(addrByte, red);
-
-    nextToSend = GREEN_COLOR;
-    exchangeState = EXCHANGE_STATE_SEND_DAPC_CMD;
-    exchangeTimer->stop();
-    exchangeTimer->start(500);
-}
-
-void DaliMain::colorButtonClick()
-{
-    QColor color = QColorDialog::getColor(Qt::red, this);
-
-    color.getRgb(&red, &green, &blue, nullptr);
-    if(red >= 255)
-        red = 254;
-    if(green >= 255)
-        green = 254;
-    if(blue >= 255)
-        blue = 254;
-    ui->redSlider->setValue(red);
-    ui->greenSlider->setValue(green);
-    ui->blueSlider->setValue(blue);
-    ui->redEdit->setText(QString::number(red));
-    ui->greenEdit->setText(QString::number(green));
-    ui->blueEdit->setText(QString::number(blue));
-
-    int alpha;
-    color.getHsv(&hue, &sat, &val, &alpha);
-    ui->hueSlider->setValue((hue*100)/255);
-    ui->saturationSlider->setValue((sat*100)/255);
-    ui->valueSlider->setValue((val*100)/255);
-    ui->hueEdit->setText(QString::number((hue*100)/255) + "%");
-    ui->saturationEdit->setText(QString::number((sat*100)/255) + "%");
-    ui->valueEdit->setText(QString::number((val*100)/255) + "%");
-
-    QPalette pal = ui->colorLabel->palette();
-    pal.setColor(QPalette::Window, color);
-    ui->colorLabel->setPalette(pal);
-
-    quint8 addrByte = ui->redAddrSpinBox->value();
-    sendDAPCData(addrByte, red);
-
-    nextToSend = GREEN_COLOR;
-    exchangeState = EXCHANGE_STATE_SEND_DAPC_CMD;
-    exchangeTimer->stop();
-    exchangeTimer->start(500);
-}
-
 //first we need to write scene value using DTR0
 void DaliMain::sceneSetBtnClicked()
 {
@@ -1751,6 +2416,17 @@ void DaliMain::sceneRemoveBtnClicked()
     slaveCmd(addr, opcodeBase + sceneNumber, EXCHANGE_STATE_IDLE, true, false, false); //
 }
 
+void DaliMain::bCastAddrCheckBoxClicked()
+{
+    if(ui->bCastAddrCheckBox->isChecked())
+    {
+       ui->sceneAddrSpinBox->setEnabled(false);
+    }
+    else
+    {
+       ui->sceneAddrSpinBox->setEnabled(true);
+    }
+}
 void DaliMain::fadeTimeSetBtnClicked()
 {
     quint8 fadeTimeVal = ui->fadeTimeSpinBox->value();
@@ -1777,21 +2453,7 @@ void DaliMain::extendedFadeTimeSetBtnClicked()
 void DaliMain::specSelChanged()
 {
     QString currTxt = ui->specSelComboBox->currentText();
-
-    if(currTxt == "205")
-    {
-        ui->daliExtCmdsComboBox->clear();
-        for(int i = 0; i < daliSpec205ExtCommandsStrList.size(); i++)
-            ui->daliExtCmdsComboBox->addItem(daliSpec205ExtCommandsStrList[i]);
-        ui->sendExtCmdEnableDeviceType->setText("Разрешить устройство типа 4 (Лампа накал.)");
-    }
-    else if(currTxt == "207")
-    {
-       ui->daliExtCmdsComboBox->clear();
-       for(int i = 0; i < daliSpec207ExtCommandsStrList.size(); i++)
-           ui->daliExtCmdsComboBox->addItem(daliSpec207ExtCommandsStrList[i]);
-       ui->sendExtCmdEnableDeviceType->setText("Разрешить устройство типа 6 (LED светильник)");
-    }
+    extCommandSel->specSelUpdate(currTxt);
 }
 
 void DaliMain::mBank202ReadBtnClicked()

@@ -1,0 +1,14 @@
+release/addressselector.o
+release/colourcontrol.o
+release/commandselector.o
+release/daliCommandParcer.o
+release/diagnostics.o
+release/main.o
+release/dalimain.o
+release/settingsdialog.o
+release/testsequense.o
+release/moc_addressselector.o
+release/moc_colourcontrol.o
+release/moc_commandselector.o
+release/moc_dalimain.o
+release/moc_settingsdialog.o

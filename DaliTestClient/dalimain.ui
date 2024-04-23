@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>875</width>
-    <height>621</height>
+    <width>932</width>
+    <height>628</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,15 +19,15 @@
      <rect>
       <x>0</x>
       <y>10</y>
-      <width>861</width>
-      <height>561</height>
+      <width>921</width>
+      <height>571</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>1</number>
+        <number>5</number>
        </property>
        <widget class="QWidget" name="adderessingTab">
         <attribute name="title">
@@ -39,10 +39,10 @@
          </property>
          <property name="geometry">
           <rect>
-           <x>0</x>
-           <y>0</y>
+           <x>10</x>
+           <y>10</y>
            <width>541</width>
-           <height>451</height>
+           <height>471</height>
           </rect>
          </property>
         </widget>
@@ -50,8 +50,8 @@
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>460</y>
-           <width>771</width>
+           <y>490</y>
+           <width>901</width>
            <height>41</height>
           </rect>
          </property>
@@ -117,6 +117,33 @@
            </spacer>
           </item>
           <item>
+           <widget class="QLabel" name="startAddrLabel">
+            <property name="text">
+             <string>Нач. адрес:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="startAddrSpinBox">
+            <property name="maximum">
+             <number>63</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_14">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
            <layout class="QHBoxLayout" name="currenLayout_12">
             <item>
              <widget class="QLineEdit" name="devCountEdit">
@@ -165,10 +192,10 @@
         <widget class="QTextEdit" name="searchInfoEdit">
          <property name="geometry">
           <rect>
-           <x>550</x>
-           <y>0</y>
-           <width>221</width>
-           <height>451</height>
+           <x>580</x>
+           <y>10</y>
+           <width>321</width>
+           <height>471</height>
           </rect>
          </property>
         </widget>
@@ -182,8 +209,8 @@
           <rect>
            <x>10</x>
            <y>10</y>
-           <width>431</width>
-           <height>491</height>
+           <width>461</width>
+           <height>531</height>
           </rect>
          </property>
          <property name="sizePolicy">
@@ -195,212 +222,12 @@
          <property name="title">
           <string>Сформировать команду</string>
          </property>
-         <widget class="QComboBox" name="daliCommandsComboBox">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>30</y>
-            <width>381</width>
-            <height>31</height>
-           </rect>
-          </property>
-         </widget>
-         <widget class="QGroupBox" name="dataValueGroupBox">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>70</y>
-            <width>391</width>
-            <height>101</height>
-           </rect>
-          </property>
-          <property name="title">
-           <string>Данные</string>
-          </property>
-          <widget class="QSlider" name="daliDataSetSlider">
-           <property name="geometry">
-            <rect>
-             <x>20</x>
-             <y>20</y>
-             <width>351</width>
-             <height>22</height>
-            </rect>
-           </property>
-           <property name="maximum">
-            <number>255</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-          <widget class="QWidget" name="horizontalLayoutWidget">
-           <property name="geometry">
-            <rect>
-             <x>20</x>
-             <y>50</y>
-             <width>361</width>
-             <height>31</height>
-            </rect>
-           </property>
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <item>
-             <layout class="QHBoxLayout" name="currenLayout_4">
-              <item>
-               <widget class="QLabel" name="decLabel">
-                <property name="text">
-                 <string notr="true">DEC</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLineEdit" name="dataDecEdit">
-                <property name="text">
-                 <string>0</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="currenLayout_5">
-              <item>
-               <widget class="QLabel" name="hexLabel">
-                <property name="text">
-                 <string notr="true">HEX</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLineEdit" name="dataHexEdit">
-                <property name="text">
-                 <string>00</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </widget>
-         </widget>
-         <widget class="QWidget" name="horizontalLayoutWidget_2">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>180</y>
-            <width>391</width>
-            <height>121</height>
-           </rect>
-          </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_2">
-           <item>
-            <widget class="QGroupBox" name="sendCmdToGroupBox">
-             <property name="title">
-              <string>Куда отправить команду</string>
-             </property>
-             <widget class="QRadioButton" name="broadcastSendRadioButton">
-              <property name="geometry">
-               <rect>
-                <x>10</x>
-                <y>30</y>
-                <width>111</width>
-                <height>17</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>Всем (Broadcast)</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-             <widget class="QWidget" name="horizontalLayoutWidget_3">
-              <property name="geometry">
-               <rect>
-                <x>10</x>
-                <y>50</y>
-                <width>131</width>
-                <height>31</height>
-               </rect>
-              </property>
-              <layout class="QHBoxLayout" name="groupSendLayout">
-               <item>
-                <widget class="QRadioButton" name="groupSendRadioButton">
-                 <property name="text">
-                  <string>Группе</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSpinBox" name="groupSendSpinBox">
-                 <property name="maximum">
-                  <number>15</number>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-             <widget class="QWidget" name="horizontalLayoutWidget_4">
-              <property name="geometry">
-               <rect>
-                <x>10</x>
-                <y>80</y>
-                <width>131</width>
-                <height>31</height>
-               </rect>
-              </property>
-              <layout class="QHBoxLayout" name="addressSendlLayout">
-               <item>
-                <widget class="QRadioButton" name="addressSendRadioButton">
-                 <property name="text">
-                  <string>По адресу</string>
-                 </property>
-                 <property name="checked">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSpinBox" name="addressSendSpinBox">
-                 <property name="maximum">
-                  <number>63</number>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="sendCmdToPushButton">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>Отправить</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
          <widget class="QGroupBox" name="commandSendGroupBox">
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>310</y>
-            <width>391</width>
+            <y>370</y>
+            <width>411</width>
             <height>61</height>
            </rect>
           </property>
@@ -410,9 +237,9 @@
           <widget class="QWidget" name="horizontalLayoutWidget_5">
            <property name="geometry">
             <rect>
-             <x>10</x>
+             <x>0</x>
              <y>20</y>
-             <width>361</width>
+             <width>371</width>
              <height>31</height>
             </rect>
            </property>
@@ -465,8 +292,8 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>370</y>
-            <width>391</width>
+            <y>430</y>
+            <width>411</width>
             <height>91</height>
            </rect>
           </property>
@@ -476,9 +303,9 @@
           <widget class="QWidget" name="horizontalLayoutWidget_7">
            <property name="geometry">
             <rect>
-             <x>10</x>
+             <x>0</x>
              <y>50</y>
-             <width>361</width>
+             <width>371</width>
              <height>31</height>
             </rect>
            </property>
@@ -529,13 +356,55 @@
           <widget class="QLineEdit" name="replyEdit">
            <property name="geometry">
             <rect>
-             <x>10</x>
+             <x>0</x>
              <y>20</y>
-             <width>361</width>
+             <width>371</width>
              <height>21</height>
             </rect>
            </property>
           </widget>
+         </widget>
+         <widget class="QWidget" name="horizontalLayoutWidget_3">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>180</y>
+            <width>441</width>
+            <height>181</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_43">
+           <item>
+            <layout class="QHBoxLayout" name="commandAddressSetlLayout"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="sendCmdToPushButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Отправить</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="verticalLayoutWidget_12">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>20</y>
+            <width>441</width>
+            <height>161</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="commandSelectLayout"/>
          </widget>
         </widget>
         <widget class="QCheckBox" name="periodSendCheckBox">
@@ -549,6 +418,16 @@
          </property>
          <property name="text">
           <string>Отправлять периодически</string>
+         </property>
+        </widget>
+        <widget class="QTextEdit" name="replyExplaintEdit">
+         <property name="geometry">
+          <rect>
+           <x>500</x>
+           <y>410</y>
+           <width>371</width>
+           <height>121</height>
+          </rect>
          </property>
         </widget>
        </widget>
@@ -580,6 +459,13 @@
               </property>
               <property name="text">
                <string>Адрес</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="bCastAddrCheckBox">
+              <property name="text">
+               <string>Всем</string>
               </property>
              </widget>
             </item>
@@ -1214,202 +1100,16 @@
           </item>
          </layout>
         </widget>
-        <widget class="QGroupBox" name="colorDemoGroupBox">
+        <widget class="QWidget" name="horizontalLayoutWidget">
          <property name="geometry">
           <rect>
-           <x>430</x>
+           <x>459</x>
            <y>10</y>
-           <width>331</width>
-           <height>341</height>
+           <width>401</width>
+           <height>501</height>
           </rect>
          </property>
-         <property name="title">
-          <string>Управление цветами (демо)</string>
-         </property>
-         <widget class="QWidget" name="horizontalLayoutWidget_8">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>20</y>
-            <width>331</width>
-            <height>241</height>
-           </rect>
-          </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_6">
-           <item>
-            <widget class="QGroupBox" name="saturationGroupBox">
-             <property name="title">
-              <string>Оттенок(Hue)</string>
-             </property>
-             <widget class="QLineEdit" name="dataDecEdit_10">
-              <property name="geometry">
-               <rect>
-                <x>10</x>
-                <y>390</y>
-                <width>51</width>
-                <height>20</height>
-               </rect>
-              </property>
-             </widget>
-             <widget class="QSlider" name="hueSlider">
-              <property name="geometry">
-               <rect>
-                <x>30</x>
-                <y>30</y>
-                <width>22</width>
-                <height>171</height>
-               </rect>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-             </widget>
-             <widget class="QLineEdit" name="hueEdit">
-              <property name="geometry">
-               <rect>
-                <x>20</x>
-                <y>210</y>
-                <width>51</width>
-                <height>20</height>
-               </rect>
-              </property>
-             </widget>
-            </widget>
-           </item>
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout_5">
-             <item>
-              <widget class="QGroupBox" name="contrastGroupBox">
-               <property name="title">
-                <string>Насыщенность(Sat)</string>
-               </property>
-               <widget class="QLineEdit" name="dataDecEdit_19">
-                <property name="geometry">
-                 <rect>
-                  <x>10</x>
-                  <y>390</y>
-                  <width>51</width>
-                  <height>20</height>
-                 </rect>
-                </property>
-               </widget>
-               <widget class="QSlider" name="saturationSlider">
-                <property name="geometry">
-                 <rect>
-                  <x>40</x>
-                  <y>20</y>
-                  <width>22</width>
-                  <height>181</height>
-                 </rect>
-                </property>
-                <property name="maximum">
-                 <number>100</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-               </widget>
-               <widget class="QLineEdit" name="saturationEdit">
-                <property name="geometry">
-                 <rect>
-                  <x>30</x>
-                  <y>210</y>
-                  <width>51</width>
-                  <height>20</height>
-                 </rect>
-                </property>
-               </widget>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="valueGroupBox">
-             <property name="title">
-              <string>Величина(Val)</string>
-             </property>
-             <widget class="QLineEdit" name="dataDecEdit_2">
-              <property name="geometry">
-               <rect>
-                <x>10</x>
-                <y>390</y>
-                <width>51</width>
-                <height>20</height>
-               </rect>
-              </property>
-             </widget>
-             <widget class="QSlider" name="valueSlider">
-              <property name="geometry">
-               <rect>
-                <x>30</x>
-                <y>20</y>
-                <width>22</width>
-                <height>181</height>
-               </rect>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-             </widget>
-             <widget class="QLineEdit" name="valueEdit">
-              <property name="geometry">
-               <rect>
-                <x>20</x>
-                <y>210</y>
-                <width>51</width>
-                <height>20</height>
-               </rect>
-              </property>
-             </widget>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QCheckBox" name="dapcSeqCheckBox">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>280</y>
-            <width>271</width>
-            <height>17</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Плавное затухание (fading)</string>
-          </property>
-         </widget>
-        </widget>
-        <widget class="QPushButton" name="colorButton">
-         <property name="geometry">
-          <rect>
-           <x>470</x>
-           <y>370</y>
-           <width>141</width>
-           <height>23</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Цвет</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="colorLabel">
-         <property name="geometry">
-          <rect>
-           <x>470</x>
-           <y>410</y>
-           <width>141</width>
-           <height>81</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
+         <layout class="QHBoxLayout" name="colourCtrlLayout"/>
         </widget>
        </widget>
        <widget class="QWidget" name="monitorTab">
@@ -1419,40 +1119,14 @@
         <widget class="QCheckBox" name="timeStampCheckBox">
          <property name="geometry">
           <rect>
-           <x>20</x>
-           <y>470</y>
+           <x>30</x>
+           <y>590</y>
            <width>161</width>
            <height>17</height>
           </rect>
          </property>
          <property name="text">
           <string>Добавить метку времени</string>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="clearMonitorWindowButton">
-         <property name="geometry">
-          <rect>
-           <x>490</x>
-           <y>470</y>
-           <width>75</width>
-           <height>23</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Очистить</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="infoLabel">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>20</y>
-           <width>47</width>
-           <height>13</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Info:</string>
          </property>
         </widget>
         <widget class="QGroupBox" name="daliMasterroupBox">
@@ -1525,15 +1199,34 @@
           </property>
          </widget>
         </widget>
-        <widget class="QTextEdit" name="monitorEdit">
+        <widget class="QWidget" name="verticalLayoutWidget_10">
          <property name="geometry">
           <rect>
-           <x>20</x>
-           <y>40</y>
-           <width>551</width>
-           <height>401</height>
+           <x>10</x>
+           <y>10</y>
+           <width>511</width>
+           <height>521</height>
           </rect>
          </property>
+         <layout class="QVBoxLayout" name="verticalLayout_19">
+          <item>
+           <widget class="QLabel" name="infoLabel">
+            <property name="text">
+             <string>Info:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTextEdit" name="monitorEdit"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="clearMonitorWindowButton">
+            <property name="text">
+             <string>Очистить</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </widget>
        <widget class="QWidget" name="extCommandsTab">
@@ -1543,10 +1236,10 @@
         <widget class="QGroupBox" name="daliExtCmdsGroupBox">
          <property name="geometry">
           <rect>
-           <x>30</x>
+           <x>10</x>
            <y>10</y>
            <width>481</width>
-           <height>491</height>
+           <height>531</height>
           </rect>
          </property>
          <property name="sizePolicy">
@@ -1558,111 +1251,11 @@
          <property name="title">
           <string>Сформировать команду</string>
          </property>
-         <widget class="QWidget" name="horizontalLayoutWidget_11">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>230</y>
-            <width>461</width>
-            <height>121</height>
-           </rect>
-          </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_13">
-           <item>
-            <widget class="QGroupBox" name="sendExtCmdToGroupBox">
-             <property name="title">
-              <string>Куда отправить команду</string>
-             </property>
-             <widget class="QRadioButton" name="broadcastExtCmdSendRadioButton">
-              <property name="geometry">
-               <rect>
-                <x>10</x>
-                <y>30</y>
-                <width>111</width>
-                <height>17</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>Всем (Broadcast)</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-             <widget class="QWidget" name="horizontalLayoutWidget_12">
-              <property name="geometry">
-               <rect>
-                <x>10</x>
-                <y>50</y>
-                <width>131</width>
-                <height>31</height>
-               </rect>
-              </property>
-              <layout class="QHBoxLayout" name="groupSendLayout_2">
-               <item>
-                <widget class="QRadioButton" name="groupSendExtCmdRadioButton">
-                 <property name="text">
-                  <string>Группе</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSpinBox" name="groupSendExtCmdSpinBox">
-                 <property name="maximum">
-                  <number>15</number>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-             <widget class="QWidget" name="horizontalLayoutWidget_13">
-              <property name="geometry">
-               <rect>
-                <x>10</x>
-                <y>80</y>
-                <width>131</width>
-                <height>31</height>
-               </rect>
-              </property>
-              <layout class="QHBoxLayout" name="addressSendlLayout_2">
-               <item>
-                <widget class="QRadioButton" name="addressSendExtCmdRadioButton">
-                 <property name="text">
-                  <string>По адресу</string>
-                 </property>
-                 <property name="checked">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSpinBox" name="addressSendExtCmdSpinBox">
-                 <property name="maximum">
-                  <number>63</number>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="sendExtCmdToPushButton">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>Отправить</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
          <widget class="QGroupBox" name="extCommandSendGroupBox">
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>350</y>
+            <y>370</y>
             <width>461</width>
             <height>61</height>
            </rect>
@@ -1675,7 +1268,7 @@
             <rect>
              <x>10</x>
              <y>20</y>
-             <width>361</width>
+             <width>441</width>
              <height>31</height>
             </rect>
            </property>
@@ -1728,7 +1321,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>410</y>
+            <y>440</y>
             <width>461</width>
             <height>81</height>
            </rect>
@@ -1741,7 +1334,7 @@
             <rect>
              <x>10</x>
              <y>50</y>
-             <width>361</width>
+             <width>441</width>
              <height>31</height>
             </rect>
            </property>
@@ -1794,7 +1387,7 @@
             <rect>
              <x>10</x>
              <y>20</y>
-             <width>361</width>
+             <width>441</width>
              <height>21</height>
             </rect>
            </property>
@@ -1805,7 +1398,7 @@
            <rect>
             <x>10</x>
             <y>20</y>
-            <width>463</width>
+            <width>471</width>
             <height>201</height>
            </rect>
           </property>
@@ -1824,88 +1417,46 @@
                <property name="text">
                 <string>Автомат. посылать команду перед</string>
                </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
             </layout>
            </item>
            <item>
-            <widget class="QComboBox" name="daliExtCmdsComboBox"/>
+            <layout class="QVBoxLayout" name="extCommandSelectLayout"/>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="horizontalLayoutWidget_4">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>220</y>
+            <width>471</width>
+            <height>151</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_44">
+           <item>
+            <layout class="QHBoxLayout" name="extCommandAddressSetlLayout"/>
            </item>
            <item>
-            <widget class="QGroupBox" name="dataExtCmdsValueGroupBox">
-             <property name="title">
-              <string>Данные</string>
+            <widget class="QPushButton" name="sendExtCmdToPushButton">
+             <property name="enabled">
+              <bool>false</bool>
              </property>
-             <widget class="QSlider" name="daliExtCmdsDataSetSlider">
-              <property name="geometry">
-               <rect>
-                <x>0</x>
-                <y>30</y>
-                <width>389</width>
-                <height>22</height>
-               </rect>
-              </property>
-              <property name="maximum">
-               <number>255</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Отправить</string>
+             </property>
             </widget>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_12">
-             <item>
-              <layout class="QHBoxLayout" name="currenLayout_8">
-               <item>
-                <widget class="QLabel" name="decExtCmdsLabel">
-                 <property name="text">
-                  <string notr="true">DEC</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLineEdit" name="dataExtCmdsDecEdit">
-                 <property name="text">
-                  <string>0</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="currenLayout_9">
-               <item>
-                <widget class="QLabel" name="hexExtCmdsLabel">
-                 <property name="text">
-                  <string notr="true">HEX</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLineEdit" name="dataExtCmdsHexEdit">
-                 <property name="text">
-                  <string>00</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_4">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
            </item>
           </layout>
          </widget>
@@ -1913,7 +1464,7 @@
         <widget class="QWidget" name="verticalLayoutWidget_5">
          <property name="geometry">
           <rect>
-           <x>510</x>
+           <x>530</x>
            <y>30</y>
            <width>181</width>
            <height>80</height>
@@ -1942,6 +1493,16 @@
            </widget>
           </item>
          </layout>
+        </widget>
+        <widget class="QTextEdit" name="extReplyExplaintEdit">
+         <property name="geometry">
+          <rect>
+           <x>530</x>
+           <y>440</y>
+           <width>371</width>
+           <height>91</height>
+          </rect>
+         </property>
         </widget>
        </widget>
        <widget class="QWidget" name="memBanksTab">
@@ -2007,7 +1568,7 @@
           <rect>
            <x>0</x>
            <y>20</y>
-           <width>851</width>
+           <width>911</width>
            <height>511</height>
           </rect>
          </property>
@@ -2144,8 +1705,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>861</width>
-           <height>531</height>
+           <width>911</width>
+           <height>541</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -2344,8 +1905,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>851</width>
-           <height>531</height>
+           <width>911</width>
+           <height>541</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -2534,6 +2095,275 @@
          </layout>
         </widget>
        </widget>
+       <widget class="QWidget" name="testSeqTab">
+        <attribute name="title">
+         <string>Тестовые посл. команд</string>
+        </attribute>
+        <widget class="QWidget" name="verticalLayoutWidget_7">
+         <property name="geometry">
+          <rect>
+           <x>530</x>
+           <y>10</y>
+           <width>351</width>
+           <height>251</height>
+          </rect>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_18">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetMaximumSize</enum>
+          </property>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_39">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QPushButton" name="loadTestSeqButton">
+              <property name="text">
+               <string>Загрузить</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="saveTestSeqButton">
+              <property name="text">
+               <string>Сохранить</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QLabel" name="selectCmdLabel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>     Команды</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="testCommandSelectlLayout"/>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="verticalLayoutWidget_8">
+         <property name="geometry">
+          <rect>
+           <x>530</x>
+           <y>400</y>
+           <width>374</width>
+           <height>152</height>
+          </rect>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_25">
+          <item>
+           <widget class="QPushButton" name="addToTestButton">
+            <property name="text">
+             <string>Добавить команду в тест</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="addExtendedCmdToTestButton">
+            <property name="text">
+             <string>Добавить расширенную команду в тест</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_40">
+            <item>
+             <widget class="QPushButton" name="addTimeoutToTestButton">
+              <property name="text">
+               <string>Добавить таймаут (сек)-&gt;</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDoubleSpinBox" name="testSeqToutSpinBox">
+              <property name="minimum">
+               <double>0.050000000000000</double>
+              </property>
+              <property name="singleStep">
+               <double>0.050000000000000</double>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_41">
+            <item>
+             <widget class="QPushButton" name="addLoopStartToTestButton">
+              <property name="text">
+               <string>Добавить начало цикла</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="addLoopEndToTestButton">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="text">
+               <string>Добавить конец цикла</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="iterCntLabel">
+              <property name="text">
+               <string>Итераций:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="testSeqIterCntSpinBox">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>255</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QPushButton" name="testStopButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Остановить тест</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_9">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="layoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>530</x>
+           <y>260</y>
+           <width>351</width>
+           <height>141</height>
+          </rect>
+         </property>
+         <layout class="QVBoxLayout" name="testSeqAddressSetLayout"/>
+        </widget>
+        <widget class="QLabel" name="sequenseLabel">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>221</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Последовательность команд для теста</string>
+         </property>
+        </widget>
+        <widget class="QTableView" name="testSeqTableView">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>20</y>
+           <width>521</width>
+           <height>461</height>
+          </rect>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+        <widget class="QWidget" name="layoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>480</y>
+           <width>521</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_38">
+          <item>
+           <widget class="QPushButton" name="removeFromTestButton">
+            <property name="text">
+             <string>Удалить команду из теста</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="clearAllTestButton">
+            <property name="text">
+             <string>Удалить Все</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QPushButton" name="testRunButton">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>510</y>
+           <width>521</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Запустить тест</string>
+         </property>
+        </widget>
+       </widget>
       </widget>
      </item>
     </layout>
@@ -2544,7 +2374,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>875</width>
+     <width>932</width>
      <height>21</height>
     </rect>
    </property>
@@ -2552,8 +2382,8 @@
     <property name="title">
      <string>COM порт</string>
     </property>
+    <addaction name="separator"/>
     <addaction name="comSetupAction"/>
-    <addaction name="comConnectAction"/>
     <addaction name="comDisconnectAction"/>
    </widget>
    <addaction name="menuCOM"/>
@@ -2561,7 +2391,7 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="comSetupAction">
    <property name="text">
-    <string>Настроить</string>
+    <string>Подключить</string>
    </property>
   </action>
   <action name="comConnectAction">

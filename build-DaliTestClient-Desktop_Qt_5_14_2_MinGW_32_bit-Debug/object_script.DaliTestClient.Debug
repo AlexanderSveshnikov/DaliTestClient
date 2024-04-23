@@ -1,0 +1,14 @@
+debug/addressselector.o
+debug/colourcontrol.o
+debug/commandselector.o
+debug/daliCommandParcer.o
+debug/diagnostics.o
+debug/main.o
+debug/dalimain.o
+debug/settingsdialog.o
+debug/testsequense.o
+debug/moc_addressselector.o
+debug/moc_colourcontrol.o
+debug/moc_commandselector.o
+debug/moc_dalimain.o
+debug/moc_settingsdialog.o

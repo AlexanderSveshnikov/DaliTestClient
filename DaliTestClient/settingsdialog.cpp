@@ -117,6 +117,7 @@ void SettingsDialog::apply()
 {
     updateSettings();
     hide();
+    emit applyClicked();
 }
 
 void SettingsDialog::checkCustomDevicePathPolicy(int idx)

@@ -1,21 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <author/>
- <comment/>
- <exportmacro/>
  <class>addressSelector</class>
  <widget class="QWidget" name="addressSelector">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>355</width>
+    <height>142</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <widget class="QGroupBox" name="sendCmdToGroupBox">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>338</width>
+     <height>121</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Куда отправить команду</string>
+   </property>
+   <widget class="QWidget" name="verticalLayoutWidget_7">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>20</y>
+      <width>321</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_18">
+     <item>
+      <widget class="QRadioButton" name="broadcastSendRadioButton">
+       <property name="text">
+        <string>Всем (Broadcast)</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="broadcastUnaddrSendRadioButton">
+       <property name="text">
+        <string>Всем без адреса (Broadcast Unaddressed)</string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="groupSendLayout">
+       <item>
+        <widget class="QRadioButton" name="groupSendRadioButton">
+         <property name="text">
+          <string>Группе</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="groupSendSpinBox">
+         <property name="maximum">
+          <number>15</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="addressSendlLayout">
+       <item>
+        <widget class="QRadioButton" name="addressSendRadioButton">
+         <property name="text">
+          <string>По адресу</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="addressSendSpinBox">
+         <property name="maximum">
+          <number>254</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
  </widget>
- <pixmapfunction/>
+ <resources/>
  <connections/>
 </ui>

@@ -7,9 +7,10 @@
 #define bitRead(value, bit) (((value) >> (bit)) & 0x01)
 #endif
 
-#define TYPE_BROADCAST  0
-#define TYPE_GROUP      1
-#define TYPE_ADDRESS    2
+#define TYPE_BROADCAST          0
+#define TYPE_GROUP              1
+#define TYPE_ADDRESS            2
+#define TYPE_BROADCAST_UNADDR   3
 
 #define DALIREG_STATUS_BALLAST           0
 #define DALIREG_STATUS_LAMP_FAILURE      1
@@ -30,6 +31,17 @@
 #define QUERY_VERSION_NUMBER                0x97
 #define QUERY_DEVICE_TYPE                   0x99
 #define ENABLE_WRITE_MEMORY                 129
+#define QUERY_STATUS                        144
+#define QUERY_CONTENT_DTR0                  152
+#define QUERY_ACTUAL_LEVEL                  160
+#define QUERY_POWER_ON_LEVEL                163
+#define QUERY_SYSTEM_FAILURE_LEVEL          164
+#define QUERY_FADE_TIME_RATE                165
+#define QUERY_SCENE_LEVEL_0                 176
+#define QUERY_SCENE_LEVEL_15                191
+#define QUERY_RANDOM_ADDR_H                 194
+#define QUERY_RANDOM_ADDR_M                 195
+#define QUERY_RANDOM_ADDR_L                 196
 #define READ_MEMORY_LOCATION                197
 
 #define SPEC_207_REFERENCE_SYSTEM_POWER              224
@@ -73,11 +85,42 @@
 #define SPEC_205_QUERY_REFERENCE_MEASUREMENT_FAILED     250
 #define SPEC_205_QUERY_EXTENDED_VERSION_NUMBER          255
 
+#define SPEC_209_SET_TEMPORARY_X_COORDINATE             224
+#define SPEC_209_SET_TEMPORARY_Y_COORDINATE             225
+#define SPEC_209_ACTIVATE                               226
+#define SPEC_209_X_COORDINATE_STEP_UP                   227
+#define SPEC_209_X_COORDINATE_STEP_DOWN                 228
+#define SPEC_209_Y_COORDINATE_STEP_UP                   229
+#define SPEC_209_Y_COORDINATE_STEP_DOWN                 230
+#define SPEC_209_SET_TEMP_COLOUR_TEMPERATURE_TC         231
+#define SPEC_209_COLOUR_TEMP_TC_STEP_COOLER             232
+#define SPEC_209_COLOUR_TEMP_TC_STEP_WARMER             233
+#define SPEC_209_SET_TEMP_PRIMARY_N_DIMLEVEL            234
+#define SPEC_209_SET_TEMP_RGB_DIMLEVEL                  235
+#define SPEC_209_SET_TEMP_WAF_DIMLEVEL                  236
+#define SPEC_209_SET_TEMP_RGBWAF_CONTROL                237
+#define SPEC_209_COPY_REPORT_TO_TEMPORARY               238
+#define SPEC_209_STORE_TY_PRIMARY_N                     240
+#define SPEC_209_STORE_XY_COORD_PRIMARY_N               241
+#define SPEC_209_STORE_COLOUR_TEMPERATURE_TC_LIMIT      242
+#define SPEC_209_STORE_GEAR_FEATURES_STATUS             243
+#define SPEC_209_ASSIGN_COLOUR_TO_LINKED_CHANNEL        245
+#define SPEC_209_START_AUTO_CALIBRATION                 246
+#define SPEC_209_QUERY_GEAR_FEATURES_STATUS             247
+#define SPEC_209_QUERY_COLOUR_STATUS                    248
+#define SPEC_209_QUERY_COLOUR_TYPE_FEATURES             249
+#define SPEC_209_QUERY_COLOUR_VALUE                     250
+#define SPEC_209_QUERY_RGBWAF_CONTROL                   251
+#define SPEC_209_QUERY_ASSIGNED_COLOUR                  252
+#define SPEC_209_QUERY_EXTENDED_VERSION                 255
+
 #define ENABLE_DEVICE_TYPE_OPCODE           0xC1
 #define SET_DTR1_OPCODE                     0xC3
 
-#define SPEC_LED_LAMP               207
-#define SPEC_INCANDESCENT_LAMP      205
+#define SPEC_LED_LAMP                               207
+#define SPEC_SELF_CONTAINED_EMERGENCY_LIGHTNING     202
+#define SPEC_INCANDESCENT_LAMP                      205
+#define SPEC_COLOUR_CONTROL                         209
 
 class daliCommandParcer
 {
@@ -91,9 +134,21 @@ public:
     bool checkCmdNeedAnswer(quint16 cmdId, quint8 specification);
     bool checkCmdSpecial(quint16 cmdId);
     void explainStatus(quint8 status, QString* statusStr);
-
+    void explainReply(uint16_t commandId, uint8_t reply, QString* resStr);
+    void explainExtReply(uint16_t commandId, uint8_t reply, QString* resStr,quint8 spec);
 private:
-
+    void parseStatus(uint8_t status, QString* resStr);
+    void parseFadeTimeRate(uint8_t time_rate, QString* resStr);
+    void parseDeviceType(uint8_t devType, QString* resStr);
+    void explainLedLampRpl(uint16_t commandId, uint8_t reply, QString* resStr);
+    void explainIncandescentLampRpl(uint16_t commandId, uint8_t reply, QString* resStr);
+    void spec209ParseFeaturesStatus(uint16_t reply, QString* resStr);
+    void spec209ParseColourStatus(uint16_t reply, QString* resStr);
+    void spec209ParseColourTypeFeatures(uint16_t reply, QString* resStr);
+    void spec209ParseRGBWAFControl(uint16_t reply, QString* resStr);
+    void spec209ParseColourValue(uint16_t reply, QString* resStr);
+    void explainColourControlRpl(uint16_t commandId, uint8_t reply, QString* resStr);
+    void explainEmergLightningRpl(uint16_t commandId, uint8_t reply, QString* resStr);
     struct
     {
        int cmdNum;
@@ -210,7 +265,7 @@ private:
         {127, false, false, false, false, true},   //REMOVE FROM GROUP 15
         {128, true, false, false, false, true},    //SET SHORT ADDRESS (DTR0)
         {ENABLE_WRITE_MEMORY, false, false, false, false, true},   //ENABLE WRITE MEMORY
-        {144, false, false, false, true, false},   //QUERY STATUS
+        {QUERY_STATUS, false, false, false, true, false},   //QUERY STATUS
         {145, false, false, false, true, false},   //QUERY CONTROL GEAR PRESENT
         {146, false, false, false, true, false},   //QUERY LAMP FAILURE
         {147, false, false, false, true, false},   //QUERY LAMP POWER ON
@@ -218,7 +273,7 @@ private:
         {149, false, false, false, true, false},   //QUERY RESET STATE
         {150, false, false, false, true, false},   //QUERY MISSING SHORT ADDRESS
         {QUERY_VERSION_NUMBER, false, false, false, true, false},   //0x97  151
-        {152, true, false, false, true, false},    //QUERY CONTENT DTR0
+        {QUERY_CONTENT_DTR0, true, false, false, true, false},    //152 QUERY CONTENT DTR0
         {QUERY_DEVICE_TYPE, false, false, false, true, false},   //0x99   153
         {154, false, false, false, true, false},   //QUERY PHYSICAL MINIMUM
         {155, false, false, false, true, false},   //QUERY POWER FAILURE
@@ -226,17 +281,17 @@ private:
         {157, false, false, true, true, false},    //QUERY CONTENT DTR2
         {158, false, false, false, true, false},   //QUERY OPERATING MODE
         {159, false, false, false, true, false},   //QUERY LIGHT SOURCE TYPE
-        {160, false, false, false, true, false},   //QUERY ACTUAL LEVEL
+        {QUERY_ACTUAL_LEVEL, false, false, false, true, false},   //QUERY ACTUAL LEVEL
         {161, false, false, false, true, false},   //QUERY MAX LEVEL
         {162, false, false, false, true, false},   //QUERY MIN LEVEL
-        {163, false, false, false, true, false},   //QUERY POWER ON LEVEL
-        {164, false, false, false, true, false},   //QUERY SYSTEM FAILURE LEVEL
-        {165, false, false, false, true, false},   //QUERY FADE TIME/FADE RATE
+        {QUERY_POWER_ON_LEVEL, false, false, false, true, false},   //QUERY POWER ON LEVEL
+        {QUERY_SYSTEM_FAILURE_LEVEL, false, false, false, true, false},   //QUERY SYSTEM FAILURE LEVEL
+        {QUERY_FADE_TIME_RATE, false, false, false, true, false},   //QUERY FADE TIME/FADE RATE
         {166, false, false, false, true, false},   //QUERY MANUFACTURER SPECIFIC MODE
         {167, false, false, false, true, false},   //QUERY NEXT DEVICE TYPE
         {168, false, false, false, true, false},   //QUERY EXTENDED FADE TIME
         {169, false, false, false, true, false},   //QUERY CONTROL GEAR FAILURE
-        {176, false, false, false, true, false},   //QUERY SCENE LEVEL 0
+        {QUERY_SCENE_LEVEL_0, false, false, false, true, false},   //QUERY SCENE LEVEL 0
         {177, false, false, false, true, false},   //QUERY SCENE LEVEL 1
         {178, false, false, false, true, false},   //QUERY SCENE LEVEL 2
         {179, false, false, false, true, false},   //QUERY SCENE LEVEL 3
@@ -251,12 +306,12 @@ private:
         {188, false, false, false, true, false},   //QUERY SCENE LEVEL 12
         {189, false, false, false, true, false},   //QUERY SCENE LEVEL 13
         {190, false, false, false, true, false},   //QUERY SCENE LEVEL 14
-        {191, false, false, false, true, false},   //QUERY SCENE LEVEL 15
+        {QUERY_SCENE_LEVEL_15, false, false, false, true, false},   //QUERY SCENE LEVEL 15
         {192, false, false, false, true, false},   //QUERY GROUPS 0-7
         {193, false, false, false, true, false},   //QUERY GROUPS 8-15
-        {194, false, false, false, true, false},   //QUERY RANDOM ADDRESS (H)
-        {195, false, false, false, true, false},   //QUERY RANDOM ADDRESS (M)
-        {196, false, false, false, true, false},   //QUERY RANDOM ADDRESS (L)
+        {QUERY_RANDOM_ADDR_H, false, false, false, true, false},   //QUERY RANDOM ADDRESS (H)
+        {QUERY_RANDOM_ADDR_M, false, false, false, true, false},   //QUERY RANDOM ADDRESS (M)
+        {QUERY_RANDOM_ADDR_L, false, false, false, true, false},   //QUERY RANDOM ADDRESS (L)
         {READ_MEMORY_LOCATION, true, true, false, true, false},     //READ MEMORY LOCATION (DTR1, DTR0)
     };
         //Application specific commands (SPEC. 207)
@@ -326,6 +381,45 @@ private:
         {SPEC_205_QUERY_EXTENDED_VERSION_NUMBER, false, false, false, true, false},
     };
 
+    struct
+    {
+        int cmdNum;
+        bool dtr0;
+        bool dtr1;
+        bool dtr2;
+        bool answer;
+        bool sendTwice;
+    }extendedCmdsSpec209ConvTab[28] =
+    {
+        {SPEC_209_SET_TEMPORARY_X_COORDINATE, true, true, false, false, false},
+        {SPEC_209_SET_TEMPORARY_Y_COORDINATE, false, false, false, false, true},
+        {SPEC_209_ACTIVATE, false, false, false, false, false},
+        {SPEC_209_X_COORDINATE_STEP_UP, false, false, false, false, false},
+        {SPEC_209_X_COORDINATE_STEP_DOWN, false, false, false, false, false},
+        {SPEC_209_Y_COORDINATE_STEP_UP, false, false, false, false, false},
+        {SPEC_209_Y_COORDINATE_STEP_DOWN, false, false, false, false, false},
+        {SPEC_209_SET_TEMP_COLOUR_TEMPERATURE_TC, true, true, false, false, false},
+        {SPEC_209_COLOUR_TEMP_TC_STEP_COOLER, false, false, false, false, false},
+        {SPEC_209_COLOUR_TEMP_TC_STEP_WARMER, false, false, false, false, false},
+        {SPEC_209_SET_TEMP_PRIMARY_N_DIMLEVEL, true, true, true, false, false},
+        {SPEC_209_SET_TEMP_RGB_DIMLEVEL, true, true, true, false, false},
+        {SPEC_209_SET_TEMP_WAF_DIMLEVEL, true, true, true, false, false},
+        {SPEC_209_SET_TEMP_RGBWAF_CONTROL, true, false, false, false, false},
+        {SPEC_209_COPY_REPORT_TO_TEMPORARY, false, false, false, false, false},
+        {SPEC_209_STORE_TY_PRIMARY_N, true, true, true, false, false},
+        {SPEC_209_STORE_XY_COORD_PRIMARY_N, false, false, true, false, false},
+        {SPEC_209_STORE_COLOUR_TEMPERATURE_TC_LIMIT, true, true, true, false, false},
+        {SPEC_209_STORE_GEAR_FEATURES_STATUS, true, false, false, false, false},
+        {SPEC_209_ASSIGN_COLOUR_TO_LINKED_CHANNEL, true, false, false, false, false},
+        {SPEC_209_START_AUTO_CALIBRATION, false, false, false, false, false},
+        {SPEC_209_QUERY_GEAR_FEATURES_STATUS, false, false, false, true, false},
+        {SPEC_209_QUERY_COLOUR_STATUS, false, false, false, true, false},
+        {SPEC_209_QUERY_COLOUR_TYPE_FEATURES, false, false, false, true, false},
+        {SPEC_209_QUERY_COLOUR_VALUE, false, false, false, true, false},
+        {SPEC_209_QUERY_RGBWAF_CONTROL, false, false, false, true, false},
+        {SPEC_209_QUERY_ASSIGNED_COLOUR, false, false, false, true, false},
+        {SPEC_209_QUERY_EXTENDED_VERSION, false, false, false, true, false},
+    };
     struct
     {
         quint8 addressByte;
