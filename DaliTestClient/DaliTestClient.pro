@@ -1,6 +1,8 @@
-QT       += core gui
+QT += core gui widgets
 QT +=  serialport
-QT += widgets
+TARGET      = DaliTestClient
+TEMPLATE    = app
+RC_FILE     = resources.rc
 
 CONFIG += c++11
 
@@ -23,6 +25,7 @@ SOURCES += \
     diagnostics.cpp \
     main.cpp \
     dalimain.cpp \
+    memorybank.cpp \
     settingsdialog.cpp \
     testsequense.cpp
 
@@ -33,6 +36,7 @@ HEADERS += \
     daliCommandParcer.h \
     dalimain.h \
     diagnostics.h \
+    memorybank.h \
     settingsdialog.h \
     testsequense.h
 
@@ -40,7 +44,8 @@ FORMS += \
     addressselector.ui \
     colourcontrol.ui \
     commandselector.ui \
-    dalimain.ui
+    dalimain.ui \
+    memorybank.ui
 
 TRANSLATIONS += \
     DaliTestClient_ru_BY.ts

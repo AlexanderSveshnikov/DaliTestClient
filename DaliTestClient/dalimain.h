@@ -27,7 +27,7 @@ QT_END_NAMESPACE
 #define SLAVE_CMD               0x01
 #define SLAVE_EMPTY_CMD         0x02
 #define SLAVE_REPLY_TOUT_CMD    0x03
-
+#define SLAVE_CMDS_SEQ          0x04
 //master sub commands id's
 #define MASTER_VID_PID  0x00
 
@@ -198,6 +198,16 @@ private:
                                     "Luminaire ident.", "Luminaire ident.", "Luminaire ident.", "Luminaire ident.", "Luminaire ident.", "Luminaire ident.",\
                                     "Luminaire ident.", "Luminaire ident.(end)",};
 
+    QStringList commandsInterruptsFadingList = { "- DIRECT ARC POWER CONTROL",
+                                                 "3 STEP UP",
+                                                 "4 STEP DOWN",
+                                                 "7 STEP DOWN AND OFF",
+                                                 "8 ON AND STEP UP",
+                                                 "34 SAVE PERSISTENT VARIABLES",
+                                                 "42 STORE THE DTR AS MAX LEVEL",
+                                                 "43 STORE THE DTR AS MIN LEVEL",
+                                               };
+
     CommandSelector* commandSel;
     CommandSelector* extCommandSel;
     CommandSelector* testSeqCommandSel;
@@ -221,6 +231,7 @@ private:
     quint8 memBank205Data[29];  //spec 253
     quint8 memBank206Data[33];  //spec 253
     quint8 memBank207Data[8];  //spec 253
+    quint8 memBank208Data[51];  //spec 202
 
     bool memBankWriteFlag;
     bool memBank1FullWriteFlag = false;
@@ -279,7 +290,7 @@ private:
     void replyFromMaster(QByteArray* data);
     uint8_t replyFromSlave(QByteArray* data);
     void slaveCmd(quint8 addrByte, quint8 opCode, discover_state_e next_state, bool setTwice, bool answer, bool is_special);
-    void addFoundedGearToTable(uint32_t searchAddress, uint8_t shortAddress);
+    void addFoundGearToTable(uint32_t searchAddress, uint8_t shortAddress);
     void gearTypeStrGet(uint8_t type, QString* typeStr);
     void addTypeVersionToTable();
     void clearTable();
@@ -358,6 +369,7 @@ private slots:
     void mBank205ReadBtnClicked();
     void mBank206ReadBtnClicked();
     void mBank207ReadBtnClicked();
+    void mBank208ReadBtnClicked();
     void slotDevAddrChanged();
     void slotDevAddrChanged_3();
     void mBank202SetLockBtnClicked();
@@ -366,12 +378,14 @@ private slots:
     void mBank205SetLockBtnClicked();
     void mBank206SetLockBtnClicked();
     void mBank207SetLockBtnClicked();
+    void mBank208SetLockBtnClicked();
     void mBank202ClrLockBtnClicked();
     void mBank203ClrLockBtnClicked();
     void mBank204ClrLockBtnClicked();
     void mBank205ClrLockBtnClicked();
     void mBank206ClrLockBtnClicked();
     void mBank207ClrLockBtnClicked();
+    void mBank208ClrLockBtnClicked();
     void bCastAddrCheckBoxClicked();
     void extCmdsSpecSelChanged();
 
@@ -379,5 +393,9 @@ private slots:
     void stepCoolerSigProc();
     void setColourValSigProc();
     void queryColorValSigProc();
+
+    void test613PushButtonClicked();
+
+    void slotTestSeqTableCellSelect(const QModelIndex);
 };
 #endif // DALIMAIN_H

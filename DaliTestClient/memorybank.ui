@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>memoryBank</class>
+ <widget class="QWidget" name="memoryBank">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>360</width>
+    <height>540</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QWidget" name="verticalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>341</width>
+     <height>521</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QLabel" name="memBankLabel">
+      <property name="text">
+       <string>Банк памяти...</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTableView" name="memBankTableView"/>
+    </item>
+    <item>
+     <widget class="QProgressBar" name="progressBar">
+      <property name="value">
+       <number>0</number>
+      </property>
+      <property name="textVisible">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_28">
+      <item>
+       <widget class="QPushButton" name="memBankSetLockButton">
+        <property name="text">
+         <string>Защита от записи</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="memBankClrLockButton">
+        <property name="text">
+         <string> Снять защиту</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="memBankReadButton">
+        <property name="text">
+         <string>Читать </string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

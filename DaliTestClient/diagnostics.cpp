@@ -100,6 +100,18 @@ void diagnostics::membank_207_init(QTableView* tabView)
      setColumnsWidth(tabView);
 }
 
+void diagnostics::membank_208_init(QTableView* tabView)
+{
+     membank_init(&memBank208Model, tabView, MEM_BANK_208_ROW_COUNT);
+     for(int i = 0; i < MEM_BANK_208_ROW_COUNT; i++)
+     {
+         memBank208Model.setData(memBank208Model.index(i, 0, QModelIndex()), QString::number(i));
+         memBank208Model.setData(memBank208Model.index(i, 1, QModelIndex()), memBank208DescList.at(i));
+     }
+     tabView->setModel(&memBank208Model);
+     setColumnsWidth(tabView);
+}
+
 QStandardItemModel* diagnostics::getMembank0Model()
 {
     return &memBank0Model;

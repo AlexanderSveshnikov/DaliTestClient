@@ -133,6 +133,10 @@ public:
     QSpinBox *extFadeTimeMultSpinBox;
     QPushButton *extendedFadeTimeSetBtn;
     QSpacerItem *verticalSpacer_8;
+    QLabel *dapcStopByCmdCheckLabel;
+    QHBoxLayout *horizontalLayout;
+    QComboBox *fadeInterruptByCmdComboBox;
+    QPushButton *test613PushButton;
     QWidget *dapcCommandsTab;
     QWidget *horizontalLayoutWidget_9;
     QHBoxLayout *horizontalLayout_7;
@@ -221,6 +225,14 @@ public:
     QLabel *specSelLabel;
     QComboBox *specSelComboBox;
     QTextEdit *extReplyExplaintEdit;
+    QWidget *layoutWidget_2;
+    QVBoxLayout *verticalLayout_20;
+    QLabel *memBank208abel;
+    QTableView *memBank208TableView;
+    QHBoxLayout *horizontalLayout_37;
+    QPushButton *memBank208SetLockButton;
+    QPushButton *memBank208ClrLockButton;
+    QPushButton *memBank208ReadButton;
     QWidget *memBanksTab;
     QWidget *layoutWidget;
     QHBoxLayout *horizontalLayout_19;
@@ -327,7 +339,6 @@ public:
     QPushButton *addLoopEndToTestButton;
     QLabel *iterCntLabel;
     QSpinBox *testSeqIterCntSpinBox;
-    QPushButton *testStopButton;
     QSpacerItem *verticalSpacer_9;
     QWidget *layoutWidget1;
     QVBoxLayout *testSeqAddressSetLayout;
@@ -337,7 +348,11 @@ public:
     QHBoxLayout *horizontalLayout_38;
     QPushButton *removeFromTestButton;
     QPushButton *clearAllTestButton;
+    QWidget *horizontalLayoutWidget_2;
+    QHBoxLayout *horizontalLayout_2;
     QPushButton *testRunButton;
+    QSpacerItem *horizontalSpacer_2;
+    QPushButton *testStopButton;
     QMenuBar *menubar;
     QMenu *menuCOM;
     QStatusBar *statusbar;
@@ -346,7 +361,7 @@ public:
     {
         if (DaliMain->objectName().isEmpty())
             DaliMain->setObjectName(QString::fromUtf8("DaliMain"));
-        DaliMain->resize(932, 628);
+        DaliMain->resize(1085, 760);
         comSetupAction = new QAction(DaliMain);
         comSetupAction->setObjectName(QString::fromUtf8("comSetupAction"));
         comConnectAction = new QAction(DaliMain);
@@ -357,7 +372,7 @@ public:
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         verticalLayoutWidget = new QWidget(centralwidget);
         verticalLayoutWidget->setObjectName(QString::fromUtf8("verticalLayoutWidget"));
-        verticalLayoutWidget->setGeometry(QRect(0, 10, 921, 571));
+        verticalLayoutWidget->setGeometry(QRect(0, 10, 1071, 691));
         verticalLayout = new QVBoxLayout(verticalLayoutWidget);
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
         verticalLayout->setContentsMargins(0, 0, 0, 0);
@@ -368,10 +383,10 @@ public:
         searchResultsTableView = new QTableView(adderessingTab);
         searchResultsTableView->setObjectName(QString::fromUtf8("searchResultsTableView"));
         searchResultsTableView->setEnabled(true);
-        searchResultsTableView->setGeometry(QRect(10, 10, 541, 471));
+        searchResultsTableView->setGeometry(QRect(10, 10, 671, 591));
         horizontalLayoutWidget_10 = new QWidget(adderessingTab);
         horizontalLayoutWidget_10->setObjectName(QString::fromUtf8("horizontalLayoutWidget_10"));
-        horizontalLayoutWidget_10->setGeometry(QRect(0, 490, 901, 41));
+        horizontalLayoutWidget_10->setGeometry(QRect(0, 610, 1051, 41));
         horizontalLayout_8 = new QHBoxLayout(horizontalLayoutWidget_10);
         horizontalLayout_8->setObjectName(QString::fromUtf8("horizontalLayout_8"));
         horizontalLayout_8->setContentsMargins(0, 0, 0, 0);
@@ -452,7 +467,7 @@ public:
 
         searchInfoEdit = new QTextEdit(adderessingTab);
         searchInfoEdit->setObjectName(QString::fromUtf8("searchInfoEdit"));
-        searchInfoEdit->setGeometry(QRect(580, 10, 321, 471));
+        searchInfoEdit->setGeometry(QRect(690, 10, 351, 591));
         tabWidget->addTab(adderessingTab, QString());
         daliCommandsTab = new QWidget();
         daliCommandsTab->setObjectName(QString::fromUtf8("daliCommandsTab"));
@@ -466,7 +481,7 @@ public:
         daliCoimmandsGroupBox->setSizePolicy(sizePolicy1);
         commandSendGroupBox = new QGroupBox(daliCoimmandsGroupBox);
         commandSendGroupBox->setObjectName(QString::fromUtf8("commandSendGroupBox"));
-        commandSendGroupBox->setGeometry(QRect(10, 370, 411, 61));
+        commandSendGroupBox->setGeometry(QRect(10, 380, 411, 61));
         horizontalLayoutWidget_5 = new QWidget(commandSendGroupBox);
         horizontalLayoutWidget_5->setObjectName(QString::fromUtf8("horizontalLayoutWidget_5"));
         horizontalLayoutWidget_5->setGeometry(QRect(0, 20, 371, 31));
@@ -511,7 +526,7 @@ public:
 
         replyGroupBox = new QGroupBox(daliCoimmandsGroupBox);
         replyGroupBox->setObjectName(QString::fromUtf8("replyGroupBox"));
-        replyGroupBox->setGeometry(QRect(10, 430, 411, 91));
+        replyGroupBox->setGeometry(QRect(10, 440, 411, 91));
         horizontalLayoutWidget_7 = new QWidget(replyGroupBox);
         horizontalLayoutWidget_7->setObjectName(QString::fromUtf8("horizontalLayoutWidget_7"));
         horizontalLayoutWidget_7->setGeometry(QRect(0, 50, 371, 31));
@@ -559,7 +574,7 @@ public:
         replyEdit->setGeometry(QRect(0, 20, 371, 21));
         horizontalLayoutWidget_3 = new QWidget(daliCoimmandsGroupBox);
         horizontalLayoutWidget_3->setObjectName(QString::fromUtf8("horizontalLayoutWidget_3"));
-        horizontalLayoutWidget_3->setGeometry(QRect(10, 180, 441, 181));
+        horizontalLayoutWidget_3->setGeometry(QRect(10, 180, 441, 171));
         horizontalLayout_43 = new QHBoxLayout(horizontalLayoutWidget_3);
         horizontalLayout_43->setObjectName(QString::fromUtf8("horizontalLayout_43"));
         horizontalLayout_43->setContentsMargins(0, 0, 0, 0);
@@ -582,9 +597,9 @@ public:
         commandSelectLayout = new QVBoxLayout(verticalLayoutWidget_12);
         commandSelectLayout->setObjectName(QString::fromUtf8("commandSelectLayout"));
         commandSelectLayout->setContentsMargins(0, 0, 0, 0);
-        periodSendCheckBox = new QCheckBox(daliCommandsTab);
+        periodSendCheckBox = new QCheckBox(daliCoimmandsGroupBox);
         periodSendCheckBox->setObjectName(QString::fromUtf8("periodSendCheckBox"));
-        periodSendCheckBox->setGeometry(QRect(480, 50, 171, 17));
+        periodSendCheckBox->setGeometry(QRect(280, 360, 171, 17));
         replyExplaintEdit = new QTextEdit(daliCommandsTab);
         replyExplaintEdit->setObjectName(QString::fromUtf8("replyExplaintEdit"));
         replyExplaintEdit->setGeometry(QRect(500, 410, 371, 121));
@@ -686,7 +701,7 @@ public:
 
         verticalLayoutWidget_3 = new QWidget(ScenesTab);
         verticalLayoutWidget_3->setObjectName(QString::fromUtf8("verticalLayoutWidget_3"));
-        verticalLayoutWidget_3->setGeometry(QRect(280, 10, 411, 221));
+        verticalLayoutWidget_3->setGeometry(QRect(280, 10, 411, 251));
         verticalLayout_4 = new QVBoxLayout(verticalLayoutWidget_3);
         verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
         verticalLayout_4->setContentsMargins(0, 0, 0, 0);
@@ -780,6 +795,31 @@ public:
         verticalSpacer_8 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         verticalLayout_4->addItem(verticalSpacer_8);
+
+        dapcStopByCmdCheckLabel = new QLabel(verticalLayoutWidget_3);
+        dapcStopByCmdCheckLabel->setObjectName(QString::fromUtf8("dapcStopByCmdCheckLabel"));
+
+        verticalLayout_4->addWidget(dapcStopByCmdCheckLabel);
+
+        horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
+        fadeInterruptByCmdComboBox = new QComboBox(verticalLayoutWidget_3);
+        fadeInterruptByCmdComboBox->setObjectName(QString::fromUtf8("fadeInterruptByCmdComboBox"));
+        QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
+        sizePolicy2.setHeightForWidth(fadeInterruptByCmdComboBox->sizePolicy().hasHeightForWidth());
+        fadeInterruptByCmdComboBox->setSizePolicy(sizePolicy2);
+
+        horizontalLayout->addWidget(fadeInterruptByCmdComboBox);
+
+        test613PushButton = new QPushButton(verticalLayoutWidget_3);
+        test613PushButton->setObjectName(QString::fromUtf8("test613PushButton"));
+
+        horizontalLayout->addWidget(test613PushButton);
+
+
+        verticalLayout_4->addLayout(horizontalLayout);
 
         tabWidget->addTab(ScenesTab, QString());
         dapcCommandsTab = new QWidget();
@@ -1135,7 +1175,7 @@ public:
 
         verticalLayoutWidget_5 = new QWidget(extCommandsTab);
         verticalLayoutWidget_5->setObjectName(QString::fromUtf8("verticalLayoutWidget_5"));
-        verticalLayoutWidget_5->setGeometry(QRect(530, 30, 181, 80));
+        verticalLayoutWidget_5->setGeometry(QRect(500, 30, 181, 51));
         verticalLayout_6 = new QVBoxLayout(verticalLayoutWidget_5);
         verticalLayout_6->setObjectName(QString::fromUtf8("verticalLayout_6"));
         verticalLayout_6->setContentsMargins(0, 0, 0, 0);
@@ -1155,7 +1195,43 @@ public:
 
         extReplyExplaintEdit = new QTextEdit(extCommandsTab);
         extReplyExplaintEdit->setObjectName(QString::fromUtf8("extReplyExplaintEdit"));
-        extReplyExplaintEdit->setGeometry(QRect(530, 440, 371, 91));
+        extReplyExplaintEdit->setGeometry(QRect(500, 460, 401, 71));
+        layoutWidget_2 = new QWidget(extCommandsTab);
+        layoutWidget_2->setObjectName(QString::fromUtf8("layoutWidget_2"));
+        layoutWidget_2->setGeometry(QRect(502, 80, 401, 371));
+        verticalLayout_20 = new QVBoxLayout(layoutWidget_2);
+        verticalLayout_20->setObjectName(QString::fromUtf8("verticalLayout_20"));
+        verticalLayout_20->setContentsMargins(0, 0, 0, 0);
+        memBank208abel = new QLabel(layoutWidget_2);
+        memBank208abel->setObjectName(QString::fromUtf8("memBank208abel"));
+
+        verticalLayout_20->addWidget(memBank208abel);
+
+        memBank208TableView = new QTableView(layoutWidget_2);
+        memBank208TableView->setObjectName(QString::fromUtf8("memBank208TableView"));
+
+        verticalLayout_20->addWidget(memBank208TableView);
+
+        horizontalLayout_37 = new QHBoxLayout();
+        horizontalLayout_37->setObjectName(QString::fromUtf8("horizontalLayout_37"));
+        memBank208SetLockButton = new QPushButton(layoutWidget_2);
+        memBank208SetLockButton->setObjectName(QString::fromUtf8("memBank208SetLockButton"));
+
+        horizontalLayout_37->addWidget(memBank208SetLockButton);
+
+        memBank208ClrLockButton = new QPushButton(layoutWidget_2);
+        memBank208ClrLockButton->setObjectName(QString::fromUtf8("memBank208ClrLockButton"));
+
+        horizontalLayout_37->addWidget(memBank208ClrLockButton);
+
+        memBank208ReadButton = new QPushButton(layoutWidget_2);
+        memBank208ReadButton->setObjectName(QString::fromUtf8("memBank208ReadButton"));
+
+        horizontalLayout_37->addWidget(memBank208ReadButton);
+
+
+        verticalLayout_20->addLayout(horizontalLayout_37);
+
         tabWidget->addTab(extCommandsTab, QString());
         memBanksTab = new QWidget();
         memBanksTab->setObjectName(QString::fromUtf8("memBanksTab"));
@@ -1190,7 +1266,7 @@ public:
 
         horizontalLayoutWidget_21 = new QWidget(memBanksTab);
         horizontalLayoutWidget_21->setObjectName(QString::fromUtf8("horizontalLayoutWidget_21"));
-        horizontalLayoutWidget_21->setGeometry(QRect(0, 20, 911, 511));
+        horizontalLayoutWidget_21->setGeometry(QRect(0, 20, 1061, 641));
         horizontalLayout_35 = new QHBoxLayout(horizontalLayoutWidget_21);
         horizontalLayout_35->setObjectName(QString::fromUtf8("horizontalLayout_35"));
         horizontalLayout_35->setContentsMargins(0, 0, 0, 0);
@@ -1290,7 +1366,7 @@ public:
         tab->setObjectName(QString::fromUtf8("tab"));
         verticalLayoutWidget_9 = new QWidget(tab);
         verticalLayoutWidget_9->setObjectName(QString::fromUtf8("verticalLayoutWidget_9"));
-        verticalLayoutWidget_9->setGeometry(QRect(0, 0, 911, 541));
+        verticalLayoutWidget_9->setGeometry(QRect(0, 0, 1061, 661));
         verticalLayout_11 = new QVBoxLayout(verticalLayoutWidget_9);
         verticalLayout_11->setObjectName(QString::fromUtf8("verticalLayout_11"));
         verticalLayout_11->setContentsMargins(0, 0, 0, 0);
@@ -1441,7 +1517,7 @@ public:
         tab_2->setObjectName(QString::fromUtf8("tab_2"));
         verticalLayoutWidget_6 = new QWidget(tab_2);
         verticalLayoutWidget_6->setObjectName(QString::fromUtf8("verticalLayoutWidget_6"));
-        verticalLayoutWidget_6->setGeometry(QRect(0, 0, 911, 541));
+        verticalLayoutWidget_6->setGeometry(QRect(0, 0, 1061, 661));
         verticalLayout_14 = new QVBoxLayout(verticalLayoutWidget_6);
         verticalLayout_14->setObjectName(QString::fromUtf8("verticalLayout_14"));
         verticalLayout_14->setContentsMargins(0, 0, 0, 0);
@@ -1591,7 +1667,7 @@ public:
         testSeqTab->setObjectName(QString::fromUtf8("testSeqTab"));
         verticalLayoutWidget_7 = new QWidget(testSeqTab);
         verticalLayoutWidget_7->setObjectName(QString::fromUtf8("verticalLayoutWidget_7"));
-        verticalLayoutWidget_7->setGeometry(QRect(530, 10, 351, 251));
+        verticalLayoutWidget_7->setGeometry(QRect(600, 20, 451, 241));
         verticalLayout_18 = new QVBoxLayout(verticalLayoutWidget_7);
         verticalLayout_18->setObjectName(QString::fromUtf8("verticalLayout_18"));
         verticalLayout_18->setSizeConstraint(QLayout::SetMaximumSize);
@@ -1614,9 +1690,6 @@ public:
 
         selectCmdLabel = new QLabel(verticalLayoutWidget_7);
         selectCmdLabel->setObjectName(QString::fromUtf8("selectCmdLabel"));
-        QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        sizePolicy2.setHorizontalStretch(0);
-        sizePolicy2.setVerticalStretch(0);
         sizePolicy2.setHeightForWidth(selectCmdLabel->sizePolicy().hasHeightForWidth());
         selectCmdLabel->setSizePolicy(sizePolicy2);
         selectCmdLabel->setFont(font);
@@ -1630,7 +1703,7 @@ public:
 
         verticalLayoutWidget_8 = new QWidget(testSeqTab);
         verticalLayoutWidget_8->setObjectName(QString::fromUtf8("verticalLayoutWidget_8"));
-        verticalLayoutWidget_8->setGeometry(QRect(530, 400, 374, 152));
+        verticalLayoutWidget_8->setGeometry(QRect(600, 400, 451, 211));
         verticalLayout_25 = new QVBoxLayout(verticalLayoutWidget_8);
         verticalLayout_25->setObjectName(QString::fromUtf8("verticalLayout_25"));
         verticalLayout_25->setContentsMargins(0, 0, 0, 0);
@@ -1689,24 +1762,13 @@ public:
 
         verticalLayout_25->addLayout(horizontalLayout_41);
 
-        testStopButton = new QPushButton(verticalLayoutWidget_8);
-        testStopButton->setObjectName(QString::fromUtf8("testStopButton"));
-        testStopButton->setEnabled(false);
-        QFont font2;
-        font2.setPointSize(10);
-        font2.setBold(true);
-        font2.setWeight(75);
-        testStopButton->setFont(font2);
-
-        verticalLayout_25->addWidget(testStopButton);
-
         verticalSpacer_9 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         verticalLayout_25->addItem(verticalSpacer_9);
 
         layoutWidget1 = new QWidget(testSeqTab);
         layoutWidget1->setObjectName(QString::fromUtf8("layoutWidget1"));
-        layoutWidget1->setGeometry(QRect(530, 260, 351, 141));
+        layoutWidget1->setGeometry(QRect(600, 260, 451, 141));
         testSeqAddressSetLayout = new QVBoxLayout(layoutWidget1);
         testSeqAddressSetLayout->setObjectName(QString::fromUtf8("testSeqAddressSetLayout"));
         testSeqAddressSetLayout->setContentsMargins(0, 0, 0, 0);
@@ -1720,7 +1782,7 @@ public:
         sequenseLabel->setSizePolicy(sizePolicy3);
         testSeqTableView = new QTableView(testSeqTab);
         testSeqTableView->setObjectName(QString::fromUtf8("testSeqTableView"));
-        testSeqTableView->setGeometry(QRect(0, 20, 521, 461));
+        testSeqTableView->setGeometry(QRect(10, 20, 581, 551));
         QSizePolicy sizePolicy4(QSizePolicy::Expanding, QSizePolicy::Expanding);
         sizePolicy4.setHorizontalStretch(0);
         sizePolicy4.setVerticalStretch(0);
@@ -1728,7 +1790,7 @@ public:
         testSeqTableView->setSizePolicy(sizePolicy4);
         layoutWidget2 = new QWidget(testSeqTab);
         layoutWidget2->setObjectName(QString::fromUtf8("layoutWidget2"));
-        layoutWidget2->setGeometry(QRect(0, 480, 521, 31));
+        layoutWidget2->setGeometry(QRect(10, 580, 581, 31));
         horizontalLayout_38 = new QHBoxLayout(layoutWidget2);
         horizontalLayout_38->setObjectName(QString::fromUtf8("horizontalLayout_38"));
         horizontalLayout_38->setContentsMargins(0, 0, 0, 0);
@@ -1742,10 +1804,33 @@ public:
 
         horizontalLayout_38->addWidget(clearAllTestButton);
 
-        testRunButton = new QPushButton(testSeqTab);
+        horizontalLayoutWidget_2 = new QWidget(testSeqTab);
+        horizontalLayoutWidget_2->setObjectName(QString::fromUtf8("horizontalLayoutWidget_2"));
+        horizontalLayoutWidget_2->setGeometry(QRect(10, 620, 1041, 41));
+        horizontalLayout_2 = new QHBoxLayout(horizontalLayoutWidget_2);
+        horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
+        horizontalLayout_2->setContentsMargins(0, 0, 0, 0);
+        testRunButton = new QPushButton(horizontalLayoutWidget_2);
         testRunButton->setObjectName(QString::fromUtf8("testRunButton"));
-        testRunButton->setGeometry(QRect(0, 510, 521, 24));
+        QFont font2;
+        font2.setPointSize(10);
+        font2.setBold(true);
+        font2.setWeight(75);
         testRunButton->setFont(font2);
+
+        horizontalLayout_2->addWidget(testRunButton);
+
+        horizontalSpacer_2 = new QSpacerItem(20, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        horizontalLayout_2->addItem(horizontalSpacer_2);
+
+        testStopButton = new QPushButton(horizontalLayoutWidget_2);
+        testStopButton->setObjectName(QString::fromUtf8("testStopButton"));
+        testStopButton->setEnabled(false);
+        testStopButton->setFont(font2);
+
+        horizontalLayout_2->addWidget(testStopButton);
+
         tabWidget->addTab(testSeqTab, QString());
 
         verticalLayout->addWidget(tabWidget);
@@ -1753,7 +1838,7 @@ public:
         DaliMain->setCentralWidget(centralwidget);
         menubar = new QMenuBar(DaliMain);
         menubar->setObjectName(QString::fromUtf8("menubar"));
-        menubar->setGeometry(QRect(0, 0, 932, 21));
+        menubar->setGeometry(QRect(0, 0, 1085, 21));
         menuCOM = new QMenu(menubar);
         menuCOM->setObjectName(QString::fromUtf8("menuCOM"));
         DaliMain->setMenuBar(menubar);
@@ -1768,7 +1853,7 @@ public:
 
         retranslateUi(DaliMain);
 
-        tabWidget->setCurrentIndex(5);
+        tabWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(DaliMain);
@@ -1808,6 +1893,8 @@ public:
         setExtendedFadeTimeBaseLabel->setText(QCoreApplication::translate("DaliMain", "\320\240\320\260\321\201\321\210\320\270\321\200. \320\262\321\200\320\265\320\274\321\217 \320\277\320\276\321\202\321\203\321\201\320\272\320\275. (Extended Fade Time), Base", nullptr));
         setExtendedFadeTimeMultLabel->setText(QCoreApplication::translate("DaliMain", "\320\240\320\260\321\201\321\210\320\270\321\200. \320\262\321\200\320\265\320\274\321\217 \320\277\320\276\321\202\321\203\321\201\320\272\320\275. (Extended Fade Time), Mult", nullptr));
         extendedFadeTimeSetBtn->setText(QCoreApplication::translate("DaliMain", "\320\243\321\201\321\202\320\260\320\275\320\276\320\262\320\270\321\202\321\214  Extended Fade Time", nullptr));
+        dapcStopByCmdCheckLabel->setText(QCoreApplication::translate("DaliMain", "\320\237\321\200\320\276\320\262\320\265\321\200\320\272\320\260 \320\277\321\200\320\265\321\200\321\213\320\262\320\260\320\275\320\270\321\217 Fading \320\272\320\276\320\274\320\260\320\275\320\264\320\276\320\271 (DAPC+CMD \321\201 \320\274\320\270\320\275 \320\270\320\275\321\202\320\265\321\200\320\262, \321\202\320\265\321\201\321\202 6.13):", nullptr));
+        test613PushButton->setText(QCoreApplication::translate("DaliMain", "\320\236\321\202\320\277\321\200\320\260\320\262\320\270\321\202\321\214", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(ScenesTab), QCoreApplication::translate("DaliMain", "\320\241\321\206\320\265\320\275\321\213(Scenes)+Fade", nullptr));
         maxValLabel->setText(QCoreApplication::translate("DaliMain", "          254-", nullptr));
         minValLabel->setText(QCoreApplication::translate("DaliMain", "              0-", nullptr));
@@ -1838,6 +1925,10 @@ public:
         autoPrependCmdCheckBox->setText(QCoreApplication::translate("DaliMain", "\320\220\320\262\321\202\320\276\320\274\320\260\321\202. \320\277\320\276\321\201\321\213\320\273\320\260\321\202\321\214 \320\272\320\276\320\274\320\260\320\275\320\264\321\203 \320\277\320\265\321\200\320\265\320\264", nullptr));
         sendExtCmdToPushButton->setText(QCoreApplication::translate("DaliMain", "\320\236\321\202\320\277\321\200\320\260\320\262\320\270\321\202\321\214", nullptr));
         specSelLabel->setText(QCoreApplication::translate("DaliMain", "\320\222\321\213\320\261\321\200\320\260\321\202\321\214 \321\201\320\277\320\265\321\206\320\270\321\204\320\270\320\272\320\260\321\206\320\270\321\216:", nullptr));
+        memBank208abel->setText(QCoreApplication::translate("DaliMain", "\320\221\320\260\320\275\320\272 \320\277\320\260\320\274\321\217\321\202\320\270 208 (Emergency Lightning)", nullptr));
+        memBank208SetLockButton->setText(QCoreApplication::translate("DaliMain", "\320\227\320\260\321\211\320\270\321\202\320\260 \320\276\321\202 \320\267\320\260\320\277\320\270\321\201\320\270", nullptr));
+        memBank208ClrLockButton->setText(QCoreApplication::translate("DaliMain", " \320\241\320\275\321\217\321\202\321\214 \320\267\320\260\321\211\320\270\321\202\321\203", nullptr));
+        memBank208ReadButton->setText(QCoreApplication::translate("DaliMain", "\320\247\320\270\321\202\320\260\321\202\321\214 ", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(extCommandsTab), QCoreApplication::translate("DaliMain", "\320\240\320\260\321\201\321\210\320\270\321\200. \320\232\320\276\320\274\320\260\320\275\320\264\321\213", nullptr));
         setDevAddrLabel->setText(QCoreApplication::translate("DaliMain", "\320\220\320\264\321\200\320\265\321\201 \321\203-\320\262\320\260", nullptr));
         readBank0Btn->setText(QCoreApplication::translate("DaliMain", "\320\247\320\270\321\202\320\260\321\202\321\214 \320\221\320\260\320\275\320\272 0", nullptr));
@@ -1885,11 +1976,11 @@ public:
         addLoopStartToTestButton->setText(QCoreApplication::translate("DaliMain", "\320\224\320\276\320\261\320\260\320\262\320\270\321\202\321\214 \320\275\320\260\321\207\320\260\320\273\320\276 \321\206\320\270\320\272\320\273\320\260", nullptr));
         addLoopEndToTestButton->setText(QCoreApplication::translate("DaliMain", "\320\224\320\276\320\261\320\260\320\262\320\270\321\202\321\214 \320\272\320\276\320\275\320\265\321\206 \321\206\320\270\320\272\320\273\320\260", nullptr));
         iterCntLabel->setText(QCoreApplication::translate("DaliMain", "\320\230\321\202\320\265\321\200\320\260\321\206\320\270\320\271:", nullptr));
-        testStopButton->setText(QCoreApplication::translate("DaliMain", "\320\236\321\201\321\202\320\260\320\275\320\276\320\262\320\270\321\202\321\214 \321\202\320\265\321\201\321\202", nullptr));
         sequenseLabel->setText(QCoreApplication::translate("DaliMain", "\320\237\320\276\321\201\320\273\320\265\320\264\320\276\320\262\320\260\321\202\320\265\320\273\321\214\320\275\320\276\321\201\321\202\321\214 \320\272\320\276\320\274\320\260\320\275\320\264 \320\264\320\273\321\217 \321\202\320\265\321\201\321\202\320\260", nullptr));
         removeFromTestButton->setText(QCoreApplication::translate("DaliMain", "\320\243\320\264\320\260\320\273\320\270\321\202\321\214 \320\272\320\276\320\274\320\260\320\275\320\264\321\203 \320\270\320\267 \321\202\320\265\321\201\321\202\320\260", nullptr));
         clearAllTestButton->setText(QCoreApplication::translate("DaliMain", "\320\243\320\264\320\260\320\273\320\270\321\202\321\214 \320\222\321\201\320\265", nullptr));
         testRunButton->setText(QCoreApplication::translate("DaliMain", "\320\227\320\260\320\277\321\203\321\201\321\202\320\270\321\202\321\214 \321\202\320\265\321\201\321\202", nullptr));
+        testStopButton->setText(QCoreApplication::translate("DaliMain", "\320\236\321\201\321\202\320\260\320\275\320\276\320\262\320\270\321\202\321\214 \321\202\320\265\321\201\321\202", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(testSeqTab), QCoreApplication::translate("DaliMain", "\320\242\320\265\321\201\321\202\320\276\320\262\321\213\320\265 \320\277\320\276\321\201\320\273. \320\272\320\276\320\274\320\260\320\275\320\264", nullptr));
         menuCOM->setTitle(QCoreApplication::translate("DaliMain", "COM \320\277\320\276\321\200\321\202", nullptr));
     } // retranslateUi

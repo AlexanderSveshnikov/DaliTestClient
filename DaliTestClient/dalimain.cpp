@@ -24,6 +24,7 @@ DaliMain::DaliMain(QWidget *parent)
     ui->searchResultsTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     clearTestSeqTableData();
+    connect(ui->testSeqTableView, SIGNAL(clicked(const QModelIndex)), this, SLOT(slotTestSeqTableCellSelect(const QModelIndex)));
 
     diag = new(diagnostics);
     diag->membank_202_init(ui->memBank202TableView);
@@ -33,6 +34,7 @@ DaliMain::DaliMain(QWidget *parent)
     diag->membank_205_init(ui->memBank205TableView);
     diag->membank_206_init(ui->memBank206TableView);
     diag->membank_207_init(ui->memBank207TableView);
+    diag->membank_208_init(ui->memBank208TableView);
 
     createMemBank0Tab(diag->getMembank0Model());
 
@@ -153,28 +155,44 @@ DaliMain::DaliMain(QWidget *parent)
    connect(ui->memBank202ReadButton, &QPushButton::clicked, this, &DaliMain::mBank202ReadBtnClicked);
    connect(ui->memBank203ReadButton, &QPushButton::clicked, this, &DaliMain::mBank203ReadBtnClicked);
    connect(ui->memBank204ReadButton, &QPushButton::clicked, this, &DaliMain::mBank204ReadBtnClicked);
+   connect(ui->mBank205ReadButton, &QPushButton::clicked, this, &DaliMain::mBank205ReadBtnClicked);
+   connect(ui->mBank206ReadButton, &QPushButton::clicked, this, &DaliMain::mBank206ReadBtnClicked);
+   connect(ui->mBank207ReadButton, &QPushButton::clicked, this, &DaliMain::mBank207ReadBtnClicked);
+   connect(ui->memBank208ReadButton, &QPushButton::clicked, this, &DaliMain::mBank208ReadBtnClicked);
    connect(ui->memBank202SetLockButton, &QPushButton::clicked, this, &DaliMain::mBank202SetLockBtnClicked);
    connect(ui->memBank203SetLockButton, &QPushButton::clicked, this, &DaliMain::mBank203SetLockBtnClicked);
    connect(ui->memBank204SetLockButton, &QPushButton::clicked, this, &DaliMain::mBank204SetLockBtnClicked);
    connect(ui->memBank205SetLockButton, &QPushButton::clicked, this, &DaliMain::mBank205SetLockBtnClicked);
    connect(ui->memBank206SetLockButton, &QPushButton::clicked, this, &DaliMain::mBank206SetLockBtnClicked);
    connect(ui->memBank207SetLockButton, &QPushButton::clicked, this, &DaliMain::mBank207SetLockBtnClicked);
+   connect(ui->memBank208SetLockButton, &QPushButton::clicked, this, &DaliMain::mBank208SetLockBtnClicked);
    connect(ui->memBank202ClrLockButton, &QPushButton::clicked, this, &DaliMain::mBank202ClrLockBtnClicked);
    connect(ui->memBank203ClrLockButton, &QPushButton::clicked, this, &DaliMain::mBank203ClrLockBtnClicked);
    connect(ui->memBank204ClrLockButton, &QPushButton::clicked, this, &DaliMain::mBank204ClrLockBtnClicked);
    connect(ui->memBank205ClrLockButton, &QPushButton::clicked, this, &DaliMain::mBank205ClrLockBtnClicked);
    connect(ui->memBank206ClrLockButton, &QPushButton::clicked, this, &DaliMain::mBank206ClrLockBtnClicked);
    connect(ui->memBank207ClrLockButton, &QPushButton::clicked, this, &DaliMain::mBank207ClrLockBtnClicked);
+   connect(ui->memBank208ClrLockButton, &QPushButton::clicked, this, &DaliMain::mBank208ClrLockBtnClicked);
    connect(ui->setDevAddrSpinBox_3, SIGNAL(valueChanged(int)), this, SLOT(slotDevAddrChanged_3()));
    ui->pwrEnergyProgressBar->setVisible(false);
    ui->diagProgressBar->setVisible(false);
 
-   connect(ui->mBank205ReadButton, &QPushButton::clicked, this, &DaliMain::mBank205ReadBtnClicked);
-   connect(ui->mBank206ReadButton, &QPushButton::clicked, this, &DaliMain::mBank206ReadBtnClicked);
-   connect(ui->mBank207ReadButton, &QPushButton::clicked, this, &DaliMain::mBank207ReadBtnClicked);
+
    connect(ui->setDevAddrSpinBox_2, SIGNAL(valueChanged(int)), this, SLOT(slotDevAddrChanged()));
 
+   ui->memBank208abel->setVisible(false);
+   ui->memBank208TableView->setVisible(false);
+   ui->memBank208SetLockButton->setVisible(false);
+   ui->memBank208ClrLockButton->setVisible(false);
+   ui->memBank208ReadButton->setVisible(false);
+
    enableControl(false);
+
+   for(int i = 0; i < commandsInterruptsFadingList.size(); i++)
+   {
+        ui->fadeInterruptByCmdComboBox->addItem(commandsInterruptsFadingList[i]);
+   }
+   connect(ui->test613PushButton, &QPushButton::clicked, this, &DaliMain::test613PushButtonClicked);
 }
 
 DaliMain::~DaliMain()
@@ -191,10 +209,21 @@ DaliMain::~DaliMain()
 
 void DaliMain::extCmdsSpecSelChanged()
 {
+    ui->memBank208abel->setVisible(false);
+    ui->memBank208TableView->setVisible(false);
+    ui->memBank208SetLockButton->setVisible(false);
+    ui->memBank208ClrLockButton->setVisible(false);
+    ui->memBank208ReadButton->setVisible(false);
+
     QString currTxt = ui->specSelComboBox->currentText();
     if(currTxt == "202")
     {
        ui->sendExtCmdEnableDeviceType->setText("Разр. у-во типа 1 (Self-cont. emerg. lighting)");
+       ui->memBank208abel->setVisible(true);
+       ui->memBank208TableView->setVisible(true);
+       ui->memBank208SetLockButton->setVisible(true);
+       ui->memBank208ClrLockButton->setVisible(true);
+       ui->memBank208ReadButton->setVisible(true);
     }
     else if(currTxt == "205")
     {
@@ -685,7 +714,6 @@ void DaliMain::removeFromTestButtonClick()
     }
     else
     {
-
        Warning.setText("Select row first!");
        Warning.exec();
     }
@@ -700,7 +728,7 @@ void DaliMain::clearTestSeqTableData()
     ui->testSeqTableView->setModel(&testTabModel);
     ui->testSeqTableView->setColumnWidth(0, 90);
     ui->testSeqTableView->setColumnWidth(1, 120);
-    ui->testSeqTableView->setColumnWidth(2, 200);
+    ui->testSeqTableView->setColumnWidth(2, 250);
     ui->testSeqTableView->setColumnWidth(3, 70);
     ui->testSeqTableView->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding));
     ui->testSeqTableView->setMinimumWidth(510);
@@ -741,7 +769,7 @@ void DaliMain::testRunButtonClick()
             testSeqCmds[0].commandDefStr.right(testSeqCmds[0].commandDefStr.size() - delimIx - 1);
         testLoopIterationCnt.append(IterCntStr.toInt());
         testLoopStartCmdId.append(0);  //List with "LoopStart" indexes (for nested loops)
-        exchangeState = EXCHANGE_STATE_LOOP_TEST_SEQUENSE;
+        exchangeState = EXCHANGE_STATE_SEND_TEST_SEQUENSE;
         exchangeTimer->start(10);
     }
     else
@@ -1119,6 +1147,11 @@ void DaliMain::updateMemBankTable()
          pData = memBank207Data;
          tabView = ui->memBank207TableView;
     }
+    else if(memBankId == 208)
+    {
+         pData = memBank208Data;
+         tabView = ui->memBank208TableView;
+    }
     QStandardItemModel* mdl = diag->fillModel(memBankId, pData);
     if((tabView != NULL) && (mdl != NULL))
         tabView->setModel(mdl);
@@ -1177,7 +1210,6 @@ void DaliMain::comPortReadData()
         QString reply;
         reply.clear();
 
-
         reply = "got " + QString::number(bts) + " bytes, ";
         for(int i = 0; i < bts; i++)
         {
@@ -1199,8 +1231,17 @@ void DaliMain::comPortReadData()
         if(comPortProcessData())
         {
             int timeRemain = waitRxTimer->remainingTime();
-            qDebug() << "TimeRemain = " + QString::number(timeRemain);
+            qDebug() << "TimeRemain waitRx = " + QString::number(timeRemain);
             waitRxTimer->stop();
+
+            timeRemain = exchangeTimer->remainingTime();
+            qDebug() << "TimeRemain Exch Timer = " + QString::number(timeRemain);
+           // if(timeRemain > 100)
+           // {
+           //     exchangeTimer->stop();
+           //     exchangeTimer->start(100);
+            //}
+
         }
     }
 }
@@ -1233,17 +1274,18 @@ void DaliMain::enableControl(bool isConnect)
                                           ui->sceneGoToButton, ui->sceneQueryLevelButton,
                                           ui->fadeTimeSetBtn, ui->fastFadeTimeSetBtn,
                                           ui->extendedFadeTimeSetBtn, ui->findDeviceButton,
-                                           ui->memBank1FlashSaveBtn,                            //ui->colorButton,
+                                          ui->memBank1FlashSaveBtn,                            //ui->colorButton,
                                           ui->memBank202ReadButton, ui->memBank203ReadButton,
                                           ui->memBank204ReadButton, ui->mBank205ReadButton,
-                                          ui->mBank206ReadButton, ui->mBank207ReadButton,
+                                          ui->mBank206ReadButton, ui->mBank207ReadButton, ui->memBank208ReadButton,
                                           ui->memBank202SetLockButton,ui->memBank203SetLockButton,
                                           ui->memBank204SetLockButton, ui->memBank205SetLockButton,
                                           ui->memBank206SetLockButton, ui->memBank207SetLockButton,
+                                          ui->memBank208SetLockButton,
                                           ui->memBank202ClrLockButton, ui->memBank203ClrLockButton,
                                           ui->memBank204ClrLockButton, ui->memBank205ClrLockButton,
                                           ui->memBank206ClrLockButton, ui->memBank207ClrLockButton,
-                                          ui->testRunButton};
+                                          ui->memBank208ClrLockButton, ui->testRunButton};
 
     QList<QPushButton*>::iterator ctrlBtnsIterator;
     for (ctrlBtnsIterator = controlButtons.begin(); ctrlBtnsIterator != controlButtons.end(); ctrlBtnsIterator++)
@@ -1516,12 +1558,6 @@ bool DaliMain::comPortProcessData()
                 exchangeTimer->stop();
                 exchangeTimer->start(125); //next step after 125 mS
             }
-            else if(tabIndex == DALI_TEST_SEQUENSE_TAB_INDEX)
-            {
-                testSeqProcessNoReply();
-                exchangeTimer->stop();
-                exchangeTimer->start(125); //next step after 125 mS
-            }
             qDebug() << "SLAVE_EMPTY_CMD";
             break;
         case SLAVE_REPLY_TOUT_CMD:
@@ -1553,7 +1589,7 @@ bool DaliMain::comPortProcessData()
                     gear_idx = gear_max_idx; //Stop searching
                 }
             }
-            if(tabIndex == DALI_TEST_SEQUENSE_TAB_INDEX)
+            else if(tabIndex == DALI_TEST_SEQUENSE_TAB_INDEX)
             {
                 testSeqProcessTimeout();
                 exchangeTimer->stop();
@@ -1638,8 +1674,8 @@ void DaliMain::slaveCmd(quint8 addrByte, quint8 opCode, discover_state_e next_st
     waitRxTimer->stop();//reload timer
     waitRx = true;      //expect for reply from master
     rdData.clear();
-    waitRxTimer->start(600);
-    qDebug() << "start waitRx, 600 mS";
+    waitRxTimer->start(150);
+    qDebug() << "start waitRx, 150 mS";
 
     QString request = "send: " ;
     for(int i = 0; i < 5; i++)
@@ -1670,7 +1706,7 @@ void DaliMain::searchAddrStart()
     {
        clearTable();
     }
-    exchangeTimer->start(700);
+    exchangeTimer->start(200);
 }
 
 void DaliMain::exchangeStop()
@@ -1706,7 +1742,7 @@ uint8_t DaliMain::generateRandomByte()
 }
 
 //"Short Address", "Random Address", "Type", "Version", "Connected"
-void DaliMain::addFoundedGearToTable(uint32_t searchAddress, uint8_t shortAddress)
+void DaliMain::addFoundGearToTable(uint32_t searchAddress, uint8_t shortAddress)
 {
     model.setData(model.index(tableEmptyRow, 0, QModelIndex()), "0x" + QString("%1").arg(shortAddress, 2, 16, QLatin1Char('0')));
     model.setData(model.index(tableEmptyRow, 1, QModelIndex()), "0x" + QString("%1").arg(searchAddress, 6, 16, QLatin1Char('0')));
@@ -1870,7 +1906,7 @@ void DaliMain::exchangeProcess()
                if(replyByte == 0xFF)
                {
                     ui->searchInfoEdit->append("Found luminaire!! (case 1)");
-                    addFoundedGearToTable(searchAddress, shortAddress);
+                    addFoundGearToTable(searchAddress, shortAddress);
 
                     ui->searchInfoEdit->append("prog short case 1 short=" + QString::number(shortAddress));
 
@@ -1905,7 +1941,7 @@ void DaliMain::exchangeProcess()
                    {
                        ui->searchInfoEdit->append("Found luminaire!! (case 2)");
                        searchAddress++;     //address is bigger by 1, because of "No" reply
-                       addFoundedGearToTable(searchAddress, shortAddress);
+                       addFoundGearToTable(searchAddress, shortAddress);
                        saveSearchFlag = true;
                        cmd_repeat_cntr = 0;
                        exchangeState =  EXCHANGE_STATE_SEARCHADDRH_CMD;  //save search address to gear, withdraw command fails otherwise
@@ -2254,13 +2290,14 @@ void DaliMain::exchangeProcess()
                 }
                 else if(testSeqCmds[nextTestSeqCmd].commandDefStr.contains("LoopEnd"))
                 {
-                    testLoopIterationCnt.last()--;
+                    if(testLoopIterationCnt.last() > 0)
+                        testLoopIterationCnt.last()--;
                     if(testLoopIterationCnt.last() == 0)
                     {
                         testLoopIterationCnt.removeLast();
                         testLoopStartCmdId.removeLast();
 
-                        testSeqSetNextHighLightBackGround(nextTestSeqCmd+1);
+                        testSeqSetNextHighLightBackGround(nextTestSeqCmd + 1);
 
                         exchangeTimer->start(10);
                     }
@@ -2498,6 +2535,11 @@ void DaliMain::mBank207ReadBtnClicked()
     readBankBtnClick(207, memBank207Data, sizeof(memBank207Data));
 }
 
+void DaliMain::mBank208ReadBtnClicked()
+{
+    readBankBtnClick(208, memBank208Data, sizeof(memBank208Data));
+}
+
 void DaliMain::mBank202SetLockBtnClicked()
 {
     memBankLock = 0xAA;
@@ -2532,6 +2574,12 @@ void DaliMain::mBank207SetLockBtnClicked()
 {
     memBankLock = 0xAA;
     writeBankBtnClick(207, LOCK_BYTE_OFFSET);
+}
+
+void DaliMain::mBank208SetLockBtnClicked()
+{
+    memBankLock = 0xAA;
+    writeBankBtnClick(208, LOCK_BYTE_OFFSET);
 }
 
 void DaliMain::mBank202ClrLockBtnClicked()
@@ -2570,6 +2618,12 @@ void DaliMain::mBank207ClrLockBtnClicked()
     writeBankBtnClick(207, LOCK_BYTE_OFFSET);
 }
 
+void DaliMain::mBank208ClrLockBtnClicked()
+{
+    memBankLock = 0xFF;
+    writeBankBtnClick(208, LOCK_BYTE_OFFSET);
+}
+
 void DaliMain::slotDevAddrChanged()
 {
     int addr = ui->setDevAddrSpinBox_2->value();
@@ -2582,4 +2636,104 @@ void DaliMain::slotDevAddrChanged_3()
     int addr = ui->setDevAddrSpinBox_3->value();
     ui->setDevAddrSpinBox->setValue(addr);
     ui->setDevAddrSpinBox_2->setValue(addr);
+}
+
+void DaliMain::slotTestSeqTableCellSelect(const QModelIndex index)
+{
+    quint32 row = index.row();
+    quint32 col = index.column();
+  //  qDebug() << "Sel row:" << QString::number(row) << " col:" << QString::number(col);
+    if(col != 2)
+        return;
+    bool ok;
+    QVariant prvVal = testTabModel.data(testTabModel.index(row, col));
+    QString text = QInputDialog::getText(this, tr("Редактировать команду"),
+                                                tr("Записать в ячейку:"), QLineEdit::Normal,
+                                                prvVal.toString(), &ok);
+    if (ok && !text.isEmpty())
+    {
+        testTabModel.setData(testTabModel.index(row, col, QModelIndex()), text);
+
+        if(text.contains("LoopStart"))  //gets value "on the fly"
+        {
+
+        }
+        else if(text.contains("LoopEnd"))
+        {
+
+        }
+        else if(text.contains("Timeout"))
+        {
+
+        }
+        else
+        {
+            qint32 addrByteIdx = text.indexOf("0x");
+            qint32 opcodeByteIdx = text.lastIndexOf("0x");
+            if((addrByteIdx != -1) && (opcodeByteIdx != -1) && (addrByteIdx != opcodeByteIdx))
+            {
+                QString addrByteStr =  text;
+                addrByteStr = addrByteStr.left(opcodeByteIdx - 1); //remove " " before opcode
+                addrByteStr.remove(0, addrByteIdx);
+                bool bStatus = false;
+                testSeqCmds[row].addrByte = addrByteStr.toUInt(&bStatus,16);
+                QString opcodeByteStr =  text.remove(0, opcodeByteIdx);
+                testSeqCmds[row].opcodeByte = opcodeByteStr.toUInt(&bStatus,16);
+            }
+        }
+    }
+    ui->testSeqTableView->setModel(&testTabModel);
+    testSeqCmds[row].commandDefStr = text;
+
+}
+
+void DaliMain::test613PushButtonClicked()
+{
+    QString cmdStr = ui->fadeInterruptByCmdComboBox->currentText();
+    daliCommandParcer parcer;
+
+    uint8_t addrType = addressSelector::INDIVIDUAL_ADDR;
+    if(ui->bCastAddrCheckBox->isChecked())
+    {
+        addrType = addressSelector::BROADCAST_ADDR;
+    }
+
+    uint8_t groupDest = 0;   //no matter
+    uint8_t addrDest = ui->sceneAddrSpinBox->value();
+    uint8_t dataByte = 0xFF;
+    buildCmd(&parcer, dataByte, cmdStr, addrType, groupDest, addrDest);
+
+    bool is_twice = parcer.checkCmdIssueTwice(cmdId, SPEC_LED_LAMP);
+
+    QByteArray data;
+    char firstByte = (char)SLAVE_CMDS_SEQ;
+    if(is_twice)
+       firstByte |= COMMAND_SEND_TWICE_FLAG;  //deals with second frame in sequence!!!
+    data.append(firstByte);
+    data.append(0x03);  //length
+    data.append((char)address_byte); //
+    data.append((char)opcode_byte); //
+    uint8_t crc = calcCrc(&data, data.size());
+    data.append(crc);
+    m_serial->write(data);
+
+    waitRxTimer->stop();//reload timer
+    waitRx = true;      //expect reply from master
+    rdData.clear();
+    waitRxTimer->start(150);
+    qDebug() << "start waitRx, 150 mS";
+
+    QString request = "send: " ;
+    for(int i = 0; i < 5; i++)
+    {
+        QString txBt = QString("%1").arg(data.at(i), 2, 16, QLatin1Char( '0' ));
+        if(txBt.size() > 2)
+        {
+           txBt = txBt.right(2);
+        }
+        request += txBt + " ";
+    }
+    ui->monitorEdit->append(request);
+
+    exchangeState = EXCHANGE_STATE_IDLE;
 }

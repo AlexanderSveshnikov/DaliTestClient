@@ -134,6 +134,9 @@
           <property name="text">
            <string>0</string>
           </property>
+          <property name="maxLength">
+           <number>3</number>
+          </property>
          </widget>
         </item>
        </layout>

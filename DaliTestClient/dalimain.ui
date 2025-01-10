@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>932</width>
-    <height>628</height>
+    <width>1085</width>
+    <height>760</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,15 +19,15 @@
      <rect>
       <x>0</x>
       <y>10</y>
-      <width>921</width>
-      <height>571</height>
+      <width>1071</width>
+      <height>691</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>5</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="adderessingTab">
         <attribute name="title">
@@ -41,8 +41,8 @@
           <rect>
            <x>10</x>
            <y>10</y>
-           <width>541</width>
-           <height>471</height>
+           <width>671</width>
+           <height>591</height>
           </rect>
          </property>
         </widget>
@@ -50,8 +50,8 @@
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>490</y>
-           <width>901</width>
+           <y>610</y>
+           <width>1051</width>
            <height>41</height>
           </rect>
          </property>
@@ -192,10 +192,10 @@
         <widget class="QTextEdit" name="searchInfoEdit">
          <property name="geometry">
           <rect>
-           <x>580</x>
+           <x>690</x>
            <y>10</y>
-           <width>321</width>
-           <height>471</height>
+           <width>351</width>
+           <height>591</height>
           </rect>
          </property>
         </widget>
@@ -226,7 +226,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>370</y>
+            <y>380</y>
             <width>411</width>
             <height>61</height>
            </rect>
@@ -292,7 +292,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>430</y>
+            <y>440</y>
             <width>411</width>
             <height>91</height>
            </rect>
@@ -370,7 +370,7 @@
             <x>10</x>
             <y>180</y>
             <width>441</width>
-            <height>181</height>
+            <height>171</height>
            </rect>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_43">
@@ -406,19 +406,19 @@
           </property>
           <layout class="QVBoxLayout" name="commandSelectLayout"/>
          </widget>
-        </widget>
-        <widget class="QCheckBox" name="periodSendCheckBox">
-         <property name="geometry">
-          <rect>
-           <x>480</x>
-           <y>50</y>
-           <width>171</width>
-           <height>17</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Отправлять периодически</string>
-         </property>
+         <widget class="QCheckBox" name="periodSendCheckBox">
+          <property name="geometry">
+           <rect>
+            <x>280</x>
+            <y>360</y>
+            <width>171</width>
+            <height>17</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Отправлять периодически</string>
+          </property>
+         </widget>
         </widget>
         <widget class="QTextEdit" name="replyExplaintEdit">
          <property name="geometry">
@@ -593,7 +593,7 @@
            <x>280</x>
            <y>10</y>
            <width>411</width>
-           <height>221</height>
+           <height>251</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -734,6 +734,34 @@
              </size>
             </property>
            </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="dapcStopByCmdCheckLabel">
+            <property name="text">
+             <string>Проверка прерывания Fading командой (DAPC+CMD с мин интерв, тест 6.13):</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QComboBox" name="fadeInterruptByCmdComboBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="test613PushButton">
+              <property name="text">
+               <string>Отправить</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
@@ -1464,10 +1492,10 @@
         <widget class="QWidget" name="verticalLayoutWidget_5">
          <property name="geometry">
           <rect>
-           <x>530</x>
+           <x>500</x>
            <y>30</y>
            <width>181</width>
-           <height>80</height>
+           <height>51</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -1497,12 +1525,59 @@
         <widget class="QTextEdit" name="extReplyExplaintEdit">
          <property name="geometry">
           <rect>
-           <x>530</x>
-           <y>440</y>
-           <width>371</width>
-           <height>91</height>
+           <x>500</x>
+           <y>460</y>
+           <width>401</width>
+           <height>71</height>
           </rect>
          </property>
+        </widget>
+        <widget class="QWidget" name="layoutWidget_2">
+         <property name="geometry">
+          <rect>
+           <x>502</x>
+           <y>80</y>
+           <width>401</width>
+           <height>371</height>
+          </rect>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_20">
+          <item>
+           <widget class="QLabel" name="memBank208abel">
+            <property name="text">
+             <string>Банк памяти 208 (Emergency Lightning)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTableView" name="memBank208TableView"/>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_37">
+            <item>
+             <widget class="QPushButton" name="memBank208SetLockButton">
+              <property name="text">
+               <string>Защита от записи</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="memBank208ClrLockButton">
+              <property name="text">
+               <string> Снять защиту</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="memBank208ReadButton">
+              <property name="text">
+               <string>Читать </string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </widget>
        </widget>
        <widget class="QWidget" name="memBanksTab">
@@ -1568,8 +1643,8 @@
           <rect>
            <x>0</x>
            <y>20</y>
-           <width>911</width>
-           <height>511</height>
+           <width>1061</width>
+           <height>641</height>
           </rect>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_35">
@@ -1705,8 +1780,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>911</width>
-           <height>541</height>
+           <width>1061</width>
+           <height>661</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1905,8 +1980,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>911</width>
-           <height>541</height>
+           <width>1061</width>
+           <height>661</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -2102,10 +2177,10 @@
         <widget class="QWidget" name="verticalLayoutWidget_7">
          <property name="geometry">
           <rect>
-           <x>530</x>
-           <y>10</y>
-           <width>351</width>
-           <height>251</height>
+           <x>600</x>
+           <y>20</y>
+           <width>451</width>
+           <height>241</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_18">
@@ -2159,10 +2234,10 @@
         <widget class="QWidget" name="verticalLayoutWidget_8">
          <property name="geometry">
           <rect>
-           <x>530</x>
+           <x>600</x>
            <y>400</y>
-           <width>374</width>
-           <height>152</height>
+           <width>451</width>
+           <height>211</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -2240,23 +2315,6 @@
            </layout>
           </item>
           <item>
-           <widget class="QPushButton" name="testStopButton">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Остановить тест</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <spacer name="verticalSpacer_9">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -2274,9 +2332,9 @@
         <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
-           <x>530</x>
+           <x>600</x>
            <y>260</y>
-           <width>351</width>
+           <width>451</width>
            <height>141</height>
           </rect>
          </property>
@@ -2304,10 +2362,10 @@
         <widget class="QTableView" name="testSeqTableView">
          <property name="geometry">
           <rect>
-           <x>0</x>
+           <x>10</x>
            <y>20</y>
-           <width>521</width>
-           <height>461</height>
+           <width>581</width>
+           <height>551</height>
           </rect>
          </property>
          <property name="sizePolicy">
@@ -2320,9 +2378,9 @@
         <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
-           <x>0</x>
-           <y>480</y>
-           <width>521</width>
+           <x>10</x>
+           <y>580</y>
+           <width>581</width>
            <height>31</height>
           </rect>
          </property>
@@ -2343,25 +2401,64 @@
           </item>
          </layout>
         </widget>
-        <widget class="QPushButton" name="testRunButton">
+        <widget class="QWidget" name="horizontalLayoutWidget_2">
          <property name="geometry">
           <rect>
-           <x>0</x>
-           <y>510</y>
-           <width>521</width>
-           <height>24</height>
+           <x>10</x>
+           <y>620</y>
+           <width>1041</width>
+           <height>41</height>
           </rect>
          </property>
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Запустить тест</string>
-         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QPushButton" name="testRunButton">
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Запустить тест</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="testStopButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Остановить тест</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </widget>
       </widget>
@@ -2374,7 +2471,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>932</width>
+     <width>1085</width>
      <height>21</height>
     </rect>
    </property>

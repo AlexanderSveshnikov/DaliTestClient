@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_DaliMain_t {
-    QByteArrayData data[80];
-    char stringdata0[1684];
+    QByteArrayData data[85];
+    char stringdata0[1811];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -92,26 +92,31 @@ QT_MOC_LITERAL(56, 1116, 22), // "mBank204ReadBtnClicked"
 QT_MOC_LITERAL(57, 1139, 22), // "mBank205ReadBtnClicked"
 QT_MOC_LITERAL(58, 1162, 22), // "mBank206ReadBtnClicked"
 QT_MOC_LITERAL(59, 1185, 22), // "mBank207ReadBtnClicked"
-QT_MOC_LITERAL(60, 1208, 18), // "slotDevAddrChanged"
-QT_MOC_LITERAL(61, 1227, 20), // "slotDevAddrChanged_3"
-QT_MOC_LITERAL(62, 1248, 25), // "mBank202SetLockBtnClicked"
-QT_MOC_LITERAL(63, 1274, 25), // "mBank203SetLockBtnClicked"
-QT_MOC_LITERAL(64, 1300, 25), // "mBank204SetLockBtnClicked"
-QT_MOC_LITERAL(65, 1326, 25), // "mBank205SetLockBtnClicked"
-QT_MOC_LITERAL(66, 1352, 25), // "mBank206SetLockBtnClicked"
-QT_MOC_LITERAL(67, 1378, 25), // "mBank207SetLockBtnClicked"
-QT_MOC_LITERAL(68, 1404, 25), // "mBank202ClrLockBtnClicked"
-QT_MOC_LITERAL(69, 1430, 25), // "mBank203ClrLockBtnClicked"
-QT_MOC_LITERAL(70, 1456, 25), // "mBank204ClrLockBtnClicked"
-QT_MOC_LITERAL(71, 1482, 25), // "mBank205ClrLockBtnClicked"
-QT_MOC_LITERAL(72, 1508, 25), // "mBank206ClrLockBtnClicked"
-QT_MOC_LITERAL(73, 1534, 25), // "mBank207ClrLockBtnClicked"
-QT_MOC_LITERAL(74, 1560, 24), // "bCastAddrCheckBoxClicked"
-QT_MOC_LITERAL(75, 1585, 21), // "extCmdsSpecSelChanged"
-QT_MOC_LITERAL(76, 1607, 17), // "stepWarmerSigProc"
-QT_MOC_LITERAL(77, 1625, 17), // "stepCoolerSigProc"
-QT_MOC_LITERAL(78, 1643, 19), // "setColourValSigProc"
-QT_MOC_LITERAL(79, 1663, 20) // "queryColorValSigProc"
+QT_MOC_LITERAL(60, 1208, 22), // "mBank208ReadBtnClicked"
+QT_MOC_LITERAL(61, 1231, 18), // "slotDevAddrChanged"
+QT_MOC_LITERAL(62, 1250, 20), // "slotDevAddrChanged_3"
+QT_MOC_LITERAL(63, 1271, 25), // "mBank202SetLockBtnClicked"
+QT_MOC_LITERAL(64, 1297, 25), // "mBank203SetLockBtnClicked"
+QT_MOC_LITERAL(65, 1323, 25), // "mBank204SetLockBtnClicked"
+QT_MOC_LITERAL(66, 1349, 25), // "mBank205SetLockBtnClicked"
+QT_MOC_LITERAL(67, 1375, 25), // "mBank206SetLockBtnClicked"
+QT_MOC_LITERAL(68, 1401, 25), // "mBank207SetLockBtnClicked"
+QT_MOC_LITERAL(69, 1427, 25), // "mBank208SetLockBtnClicked"
+QT_MOC_LITERAL(70, 1453, 25), // "mBank202ClrLockBtnClicked"
+QT_MOC_LITERAL(71, 1479, 25), // "mBank203ClrLockBtnClicked"
+QT_MOC_LITERAL(72, 1505, 25), // "mBank204ClrLockBtnClicked"
+QT_MOC_LITERAL(73, 1531, 25), // "mBank205ClrLockBtnClicked"
+QT_MOC_LITERAL(74, 1557, 25), // "mBank206ClrLockBtnClicked"
+QT_MOC_LITERAL(75, 1583, 25), // "mBank207ClrLockBtnClicked"
+QT_MOC_LITERAL(76, 1609, 25), // "mBank208ClrLockBtnClicked"
+QT_MOC_LITERAL(77, 1635, 24), // "bCastAddrCheckBoxClicked"
+QT_MOC_LITERAL(78, 1660, 21), // "extCmdsSpecSelChanged"
+QT_MOC_LITERAL(79, 1682, 17), // "stepWarmerSigProc"
+QT_MOC_LITERAL(80, 1700, 17), // "stepCoolerSigProc"
+QT_MOC_LITERAL(81, 1718, 19), // "setColourValSigProc"
+QT_MOC_LITERAL(82, 1738, 20), // "queryColorValSigProc"
+QT_MOC_LITERAL(83, 1759, 24), // "test613PushButtonClicked"
+QT_MOC_LITERAL(84, 1784, 26) // "slotTestSeqTableCellSelect"
 
     },
     "DaliMain\0comSetup\0\0comConnect\0"
@@ -148,22 +153,26 @@ QT_MOC_LITERAL(79, 1663, 20) // "queryColorValSigProc"
     "mBank202ReadBtnClicked\0mBank203ReadBtnClicked\0"
     "mBank204ReadBtnClicked\0mBank205ReadBtnClicked\0"
     "mBank206ReadBtnClicked\0mBank207ReadBtnClicked\0"
-    "slotDevAddrChanged\0slotDevAddrChanged_3\0"
-    "mBank202SetLockBtnClicked\0"
+    "mBank208ReadBtnClicked\0slotDevAddrChanged\0"
+    "slotDevAddrChanged_3\0mBank202SetLockBtnClicked\0"
     "mBank203SetLockBtnClicked\0"
     "mBank204SetLockBtnClicked\0"
     "mBank205SetLockBtnClicked\0"
     "mBank206SetLockBtnClicked\0"
     "mBank207SetLockBtnClicked\0"
+    "mBank208SetLockBtnClicked\0"
     "mBank202ClrLockBtnClicked\0"
     "mBank203ClrLockBtnClicked\0"
     "mBank204ClrLockBtnClicked\0"
     "mBank205ClrLockBtnClicked\0"
     "mBank206ClrLockBtnClicked\0"
     "mBank207ClrLockBtnClicked\0"
+    "mBank208ClrLockBtnClicked\0"
     "bCastAddrCheckBoxClicked\0extCmdsSpecSelChanged\0"
     "stepWarmerSigProc\0stepCoolerSigProc\0"
-    "setColourValSigProc\0queryColorValSigProc"
+    "setColourValSigProc\0queryColorValSigProc\0"
+    "test613PushButtonClicked\0"
+    "slotTestSeqTableCellSelect"
 };
 #undef QT_MOC_LITERAL
 
@@ -173,7 +182,7 @@ static const uint qt_meta_data_DaliMain[] = {
        8,       // revision
        0,       // classname
        0,    0, // classinfo
-      75,   14, // methods
+      80,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -181,81 +190,86 @@ static const uint qt_meta_data_DaliMain[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,  389,    2, 0x08 /* Private */,
-       3,    0,  390,    2, 0x08 /* Private */,
-       4,    0,  391,    2, 0x08 /* Private */,
-       5,    0,  392,    2, 0x08 /* Private */,
-       6,    0,  393,    2, 0x08 /* Private */,
-       7,    0,  394,    2, 0x08 /* Private */,
-       8,    0,  395,    2, 0x08 /* Private */,
-       9,    0,  396,    2, 0x08 /* Private */,
-      10,    0,  397,    2, 0x08 /* Private */,
-      11,    0,  398,    2, 0x08 /* Private */,
-      12,    0,  399,    2, 0x08 /* Private */,
-      13,    0,  400,    2, 0x08 /* Private */,
-      14,    0,  401,    2, 0x08 /* Private */,
-      15,    0,  402,    2, 0x08 /* Private */,
-      16,    0,  403,    2, 0x08 /* Private */,
-      17,    0,  404,    2, 0x08 /* Private */,
-      18,    0,  405,    2, 0x08 /* Private */,
-      19,    0,  406,    2, 0x08 /* Private */,
-      20,    0,  407,    2, 0x08 /* Private */,
-      21,    0,  408,    2, 0x08 /* Private */,
-      22,    0,  409,    2, 0x08 /* Private */,
-      23,    0,  410,    2, 0x08 /* Private */,
-      24,    0,  411,    2, 0x08 /* Private */,
-      25,    0,  412,    2, 0x08 /* Private */,
-      26,    0,  413,    2, 0x08 /* Private */,
-      27,    0,  414,    2, 0x08 /* Private */,
-      29,    1,  415,    2, 0x08 /* Private */,
-      31,    0,  418,    2, 0x08 /* Private */,
-      32,    1,  419,    2, 0x08 /* Private */,
-      33,    0,  422,    2, 0x08 /* Private */,
-      34,    1,  423,    2, 0x08 /* Private */,
-      35,    0,  426,    2, 0x08 /* Private */,
-      36,    1,  427,    2, 0x08 /* Private */,
-      37,    0,  430,    2, 0x08 /* Private */,
-      38,    0,  431,    2, 0x08 /* Private */,
-      39,    0,  432,    2, 0x08 /* Private */,
-      40,    0,  433,    2, 0x08 /* Private */,
-      41,    0,  434,    2, 0x08 /* Private */,
-      42,    0,  435,    2, 0x08 /* Private */,
-      43,    0,  436,    2, 0x08 /* Private */,
-      44,    0,  437,    2, 0x08 /* Private */,
-      45,    0,  438,    2, 0x08 /* Private */,
-      46,    0,  439,    2, 0x08 /* Private */,
-      47,    0,  440,    2, 0x08 /* Private */,
-      48,    0,  441,    2, 0x08 /* Private */,
-      49,    0,  442,    2, 0x08 /* Private */,
-      50,    0,  443,    2, 0x08 /* Private */,
-      51,    0,  444,    2, 0x08 /* Private */,
-      52,    1,  445,    2, 0x08 /* Private */,
-      54,    0,  448,    2, 0x08 /* Private */,
-      55,    0,  449,    2, 0x08 /* Private */,
-      56,    0,  450,    2, 0x08 /* Private */,
-      57,    0,  451,    2, 0x08 /* Private */,
-      58,    0,  452,    2, 0x08 /* Private */,
-      59,    0,  453,    2, 0x08 /* Private */,
-      60,    0,  454,    2, 0x08 /* Private */,
-      61,    0,  455,    2, 0x08 /* Private */,
-      62,    0,  456,    2, 0x08 /* Private */,
-      63,    0,  457,    2, 0x08 /* Private */,
-      64,    0,  458,    2, 0x08 /* Private */,
-      65,    0,  459,    2, 0x08 /* Private */,
-      66,    0,  460,    2, 0x08 /* Private */,
-      67,    0,  461,    2, 0x08 /* Private */,
-      68,    0,  462,    2, 0x08 /* Private */,
-      69,    0,  463,    2, 0x08 /* Private */,
-      70,    0,  464,    2, 0x08 /* Private */,
-      71,    0,  465,    2, 0x08 /* Private */,
-      72,    0,  466,    2, 0x08 /* Private */,
-      73,    0,  467,    2, 0x08 /* Private */,
-      74,    0,  468,    2, 0x08 /* Private */,
-      75,    0,  469,    2, 0x08 /* Private */,
-      76,    0,  470,    2, 0x08 /* Private */,
-      77,    0,  471,    2, 0x08 /* Private */,
-      78,    0,  472,    2, 0x08 /* Private */,
-      79,    0,  473,    2, 0x08 /* Private */,
+       1,    0,  414,    2, 0x08 /* Private */,
+       3,    0,  415,    2, 0x08 /* Private */,
+       4,    0,  416,    2, 0x08 /* Private */,
+       5,    0,  417,    2, 0x08 /* Private */,
+       6,    0,  418,    2, 0x08 /* Private */,
+       7,    0,  419,    2, 0x08 /* Private */,
+       8,    0,  420,    2, 0x08 /* Private */,
+       9,    0,  421,    2, 0x08 /* Private */,
+      10,    0,  422,    2, 0x08 /* Private */,
+      11,    0,  423,    2, 0x08 /* Private */,
+      12,    0,  424,    2, 0x08 /* Private */,
+      13,    0,  425,    2, 0x08 /* Private */,
+      14,    0,  426,    2, 0x08 /* Private */,
+      15,    0,  427,    2, 0x08 /* Private */,
+      16,    0,  428,    2, 0x08 /* Private */,
+      17,    0,  429,    2, 0x08 /* Private */,
+      18,    0,  430,    2, 0x08 /* Private */,
+      19,    0,  431,    2, 0x08 /* Private */,
+      20,    0,  432,    2, 0x08 /* Private */,
+      21,    0,  433,    2, 0x08 /* Private */,
+      22,    0,  434,    2, 0x08 /* Private */,
+      23,    0,  435,    2, 0x08 /* Private */,
+      24,    0,  436,    2, 0x08 /* Private */,
+      25,    0,  437,    2, 0x08 /* Private */,
+      26,    0,  438,    2, 0x08 /* Private */,
+      27,    0,  439,    2, 0x08 /* Private */,
+      29,    1,  440,    2, 0x08 /* Private */,
+      31,    0,  443,    2, 0x08 /* Private */,
+      32,    1,  444,    2, 0x08 /* Private */,
+      33,    0,  447,    2, 0x08 /* Private */,
+      34,    1,  448,    2, 0x08 /* Private */,
+      35,    0,  451,    2, 0x08 /* Private */,
+      36,    1,  452,    2, 0x08 /* Private */,
+      37,    0,  455,    2, 0x08 /* Private */,
+      38,    0,  456,    2, 0x08 /* Private */,
+      39,    0,  457,    2, 0x08 /* Private */,
+      40,    0,  458,    2, 0x08 /* Private */,
+      41,    0,  459,    2, 0x08 /* Private */,
+      42,    0,  460,    2, 0x08 /* Private */,
+      43,    0,  461,    2, 0x08 /* Private */,
+      44,    0,  462,    2, 0x08 /* Private */,
+      45,    0,  463,    2, 0x08 /* Private */,
+      46,    0,  464,    2, 0x08 /* Private */,
+      47,    0,  465,    2, 0x08 /* Private */,
+      48,    0,  466,    2, 0x08 /* Private */,
+      49,    0,  467,    2, 0x08 /* Private */,
+      50,    0,  468,    2, 0x08 /* Private */,
+      51,    0,  469,    2, 0x08 /* Private */,
+      52,    1,  470,    2, 0x08 /* Private */,
+      54,    0,  473,    2, 0x08 /* Private */,
+      55,    0,  474,    2, 0x08 /* Private */,
+      56,    0,  475,    2, 0x08 /* Private */,
+      57,    0,  476,    2, 0x08 /* Private */,
+      58,    0,  477,    2, 0x08 /* Private */,
+      59,    0,  478,    2, 0x08 /* Private */,
+      60,    0,  479,    2, 0x08 /* Private */,
+      61,    0,  480,    2, 0x08 /* Private */,
+      62,    0,  481,    2, 0x08 /* Private */,
+      63,    0,  482,    2, 0x08 /* Private */,
+      64,    0,  483,    2, 0x08 /* Private */,
+      65,    0,  484,    2, 0x08 /* Private */,
+      66,    0,  485,    2, 0x08 /* Private */,
+      67,    0,  486,    2, 0x08 /* Private */,
+      68,    0,  487,    2, 0x08 /* Private */,
+      69,    0,  488,    2, 0x08 /* Private */,
+      70,    0,  489,    2, 0x08 /* Private */,
+      71,    0,  490,    2, 0x08 /* Private */,
+      72,    0,  491,    2, 0x08 /* Private */,
+      73,    0,  492,    2, 0x08 /* Private */,
+      74,    0,  493,    2, 0x08 /* Private */,
+      75,    0,  494,    2, 0x08 /* Private */,
+      76,    0,  495,    2, 0x08 /* Private */,
+      77,    0,  496,    2, 0x08 /* Private */,
+      78,    0,  497,    2, 0x08 /* Private */,
+      79,    0,  498,    2, 0x08 /* Private */,
+      80,    0,  499,    2, 0x08 /* Private */,
+      81,    0,  500,    2, 0x08 /* Private */,
+      82,    0,  501,    2, 0x08 /* Private */,
+      83,    0,  502,    2, 0x08 /* Private */,
+      84,    1,  503,    2, 0x08 /* Private */,
 
  // slots: parameters
     QMetaType::Void,
@@ -333,6 +347,11 @@ static const uint qt_meta_data_DaliMain[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void, 0x80000000 | 53,    2,
 
        0        // eod
 };
@@ -399,26 +418,31 @@ void DaliMain::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
         case 52: _t->mBank205ReadBtnClicked(); break;
         case 53: _t->mBank206ReadBtnClicked(); break;
         case 54: _t->mBank207ReadBtnClicked(); break;
-        case 55: _t->slotDevAddrChanged(); break;
-        case 56: _t->slotDevAddrChanged_3(); break;
-        case 57: _t->mBank202SetLockBtnClicked(); break;
-        case 58: _t->mBank203SetLockBtnClicked(); break;
-        case 59: _t->mBank204SetLockBtnClicked(); break;
-        case 60: _t->mBank205SetLockBtnClicked(); break;
-        case 61: _t->mBank206SetLockBtnClicked(); break;
-        case 62: _t->mBank207SetLockBtnClicked(); break;
-        case 63: _t->mBank202ClrLockBtnClicked(); break;
-        case 64: _t->mBank203ClrLockBtnClicked(); break;
-        case 65: _t->mBank204ClrLockBtnClicked(); break;
-        case 66: _t->mBank205ClrLockBtnClicked(); break;
-        case 67: _t->mBank206ClrLockBtnClicked(); break;
-        case 68: _t->mBank207ClrLockBtnClicked(); break;
-        case 69: _t->bCastAddrCheckBoxClicked(); break;
-        case 70: _t->extCmdsSpecSelChanged(); break;
-        case 71: _t->stepWarmerSigProc(); break;
-        case 72: _t->stepCoolerSigProc(); break;
-        case 73: _t->setColourValSigProc(); break;
-        case 74: _t->queryColorValSigProc(); break;
+        case 55: _t->mBank208ReadBtnClicked(); break;
+        case 56: _t->slotDevAddrChanged(); break;
+        case 57: _t->slotDevAddrChanged_3(); break;
+        case 58: _t->mBank202SetLockBtnClicked(); break;
+        case 59: _t->mBank203SetLockBtnClicked(); break;
+        case 60: _t->mBank204SetLockBtnClicked(); break;
+        case 61: _t->mBank205SetLockBtnClicked(); break;
+        case 62: _t->mBank206SetLockBtnClicked(); break;
+        case 63: _t->mBank207SetLockBtnClicked(); break;
+        case 64: _t->mBank208SetLockBtnClicked(); break;
+        case 65: _t->mBank202ClrLockBtnClicked(); break;
+        case 66: _t->mBank203ClrLockBtnClicked(); break;
+        case 67: _t->mBank204ClrLockBtnClicked(); break;
+        case 68: _t->mBank205ClrLockBtnClicked(); break;
+        case 69: _t->mBank206ClrLockBtnClicked(); break;
+        case 70: _t->mBank207ClrLockBtnClicked(); break;
+        case 71: _t->mBank208ClrLockBtnClicked(); break;
+        case 72: _t->bCastAddrCheckBoxClicked(); break;
+        case 73: _t->extCmdsSpecSelChanged(); break;
+        case 74: _t->stepWarmerSigProc(); break;
+        case 75: _t->stepCoolerSigProc(); break;
+        case 76: _t->setColourValSigProc(); break;
+        case 77: _t->queryColorValSigProc(); break;
+        case 78: _t->test613PushButtonClicked(); break;
+        case 79: _t->slotTestSeqTableCellSelect((*reinterpret_cast< const QModelIndex(*)>(_a[1]))); break;
         default: ;
         }
     }
@@ -453,13 +477,13 @@ int DaliMain::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 75)
+        if (_id < 80)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 75;
+        _id -= 80;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 75)
+        if (_id < 80)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 75;
+        _id -= 80;
     }
     return _id;
 }

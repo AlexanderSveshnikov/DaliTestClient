@@ -6,14 +6,7 @@
 #include <QTableView>
 #include <QStandardItemModel>
 
-#define MEM_BANK_0_ROW_COUNT    27
-#define MEM_BANK_1_ROW_COUNT    120
-#define MEM_BANK_202_ROW_COUNT  16
-#define MEM_BANK_203_ROW_COUNT  16
-#define MEM_BANK_204_ROW_COUNT  16
-#define MEM_BANK_205_ROW_COUNT  29
-#define MEM_BANK_206_ROW_COUNT  33
-#define MEM_BANK_207_ROW_COUNT  8
+
 
 class diagnostics
 {
@@ -25,6 +18,7 @@ public:
     void membank_205_init(QTableView* tabView);
     void membank_206_init(QTableView* tabView);
     void membank_207_init(QTableView* tabView);
+    void membank_208_init(QTableView* tabView);
     QStandardItemModel* getMembank0Model();
     QStandardItemModel* getMembank1Model();
     QStandardItemModel* getMembank202Model();
@@ -36,6 +30,16 @@ public:
 
     QStandardItemModel* fillModel(quint8 memBankId, quint8* pData);
 private:
+    #define MEM_BANK_0_ROW_COUNT    27
+    #define MEM_BANK_1_ROW_COUNT    120
+    #define MEM_BANK_202_ROW_COUNT  16
+    #define MEM_BANK_203_ROW_COUNT  16
+    #define MEM_BANK_204_ROW_COUNT  16
+    #define MEM_BANK_205_ROW_COUNT  29
+    #define MEM_BANK_206_ROW_COUNT  33
+    #define MEM_BANK_207_ROW_COUNT  8
+    #define MEM_BANK_208_ROW_COUNT  51
+
     #define UINT8_TMASK                             0xFE
     #define UINT8_MASK                              0xFF
     #define UINT16_TMASK                            0xFFFE
@@ -75,6 +79,7 @@ private:
     QStandardItemModel memBank205Model;
     QStandardItemModel memBank206Model;
     QStandardItemModel memBank207Model;
+    QStandardItemModel memBank208Model;
 
     quint32 opTime = 0;
     quint32 startCntr = 0;
@@ -140,6 +145,33 @@ private:
        "InternalCtrlGearRefTemperature",
        "RatedMedianUsefulLightSrcStarts(MSB)",
        "RatedMedianUsefulLightSrcStarts(LSB)"
+    };
+
+    QList<QString>memBank208DescList =
+    {
+       "Addr of last addressable mem loc", "Indicator byte", "Lock byte",
+       "Vers. of the mem. bank", "Ctrl Gear Max Ref Temperature",
+       "Ctrl Gear Temperature", "Min Measured Gear Temperature (Total)",
+       "Max Measured Gear Temperature (Total)", "Min Measured Gear Temperature (Curr Battery)",
+       "Max Measured Gear Temperature (Curr Battery)", "Average Power During Bat Charging",
+       "Average Power During BatCharge Maintenance", "Rated Duration Time",
+       "Function test time", "Battery Recharge Time", "Battery Failure Counter",
+       "Battery Cut-Off Counter", "Lamp Cut-Off Counter (Total)", "Lamp Cut-Off Counter (Curr Battery)",
+       "Lamp Emergency Time (Total) (MSB)", "Lamp Emergency Time (Total) (Mid)", "Lamp Emergency Time (Total) (LSB)",
+       "Lamp Emergency Time (Curr Battery) (MSB)", "Lamp Emergency Time (Curr Battery) (Mid)", "Lamp Emergency Time (Curr Battery) (LSB)",
+       "Battery Connected Time (Total) (MSB)", "Battery Connected Time (Total) (LSB)",
+       "Battery Connected Time (Curr Battery) (MSB)", "Battery Connected Time (Curr Battery) (LSB)",
+       "Emergency Control Gear Failure Counter", "Battery Duration Failure Counter",
+       "Battery Failure Counter", "Emergency Lamp Failure Counter",
+       "Func Test Max Delay Exceeded Counter", "Durat Test Max Delay Exceeded Counter",
+       "Func Test Failed Counter (Total) (MSB)", "Func Test Failed Counter (Total) (LSB)",
+       "Durat Test Failed Counter (Total) ", "Func Test Failed Counter (Curr Battery) (MSB)",
+       "Func Test Failed Counter (Curr Battery) (LSB)", "Duration Test Failed Counter (Current Battery)",
+       "Start Function Test Counter (MSB)", "Start Function Test Counter (LSB)",
+       "Start Duration Test Counter (Total)", "Start Duration Test Counter (Current Battery)",
+       "Rest Mode Counter (MSB)", "Rest Mode Counter (LSB)",
+       "Emergency Mode Counter (Total) (MSB)", "Emergency Mode Counter (Total) (LSB)",
+       "Emergency Mode Counter (Current Battery) (MSB)", "Emergency Mode Counter (Current Battery) (LSB)",
     };
 
     void setColumnsWidth(QTableView* tabView);

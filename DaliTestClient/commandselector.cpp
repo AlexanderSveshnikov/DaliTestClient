@@ -13,6 +13,8 @@ CommandSelector::CommandSelector(QWidget *parent) :
     ui->testSeqSpecSelComboBox->setVisible(false);
 
     connect(ui->daliDataSetSlider, SIGNAL(valueChanged(int)), SLOT(updateDaliDataSetSlider(int)));
+    connect(ui->dataDecEdit, SIGNAL(textEdited(const QString &)), SLOT(dataDecEditTextChanged()));
+    connect(ui->dataHexEdit, SIGNAL(textEdited(const QString &)), SLOT(dataHexEditTextChanged()));
 }
 
 CommandSelector::~CommandSelector()
@@ -61,6 +63,75 @@ void CommandSelector::updateDaliDataSetSlider(int sliderVal)
 {
     ui->dataDecEdit->setText(QString::number(sliderVal));
     ui->dataHexEdit->setText(QString("%1").arg(sliderVal, 2, 16, QLatin1Char( '0' )));
+}
+
+void CommandSelector::dataDecEditTextChanged()
+{
+    QMessageBox msg;
+    QString resValStr = ui->dataDecEdit->text();
+    if(resValStr == "")
+    {
+        int sliderVal = ui->daliDataSetSlider->value();
+        ui->dataDecEdit->setText(QString::number(sliderVal));
+        ui->dataHexEdit->setText(QString("%1").arg(sliderVal, 2, 16, QLatin1Char( '0' )));
+        return;
+    }
+    QRegularExpression regExpr1("\\d\\d\\d");
+    QRegularExpression regExpr2("\\d\\d");
+    QRegularExpression regExpr3("\\d");
+    QRegularExpressionMatch match1 = regExpr1.match(resValStr, 0, QRegularExpression::NormalMatch);
+    QRegularExpressionMatch match2 = regExpr2.match(resValStr, 0, QRegularExpression::NormalMatch);
+    QRegularExpressionMatch match3 = regExpr3.match(resValStr, 0, QRegularExpression::NormalMatch);
+    if((!match1.hasMatch()) && (!match2.hasMatch()) && (!match3.hasMatch()))
+    {
+        msg.setText("Неверный ввод!");
+        msg.exec();
+    }
+    else
+    {
+        int resVal = resValStr.toInt();
+        if(resVal > 255)
+        {
+            msg.setText("Слишком большое число! (>255)");
+            msg.exec();
+        }
+        else
+        {
+            ui->daliDataSetSlider->setValue(resVal);
+            ui->dataHexEdit->setText(QString("%1").arg(resVal, 2, 16, QLatin1Char( '0' )));
+        }
+    }
+}
+
+void CommandSelector::dataHexEditTextChanged()
+{
+    QMessageBox msg;
+    QString resValStr = ui->dataHexEdit->text();
+    if(resValStr == "")
+        return;
+    QRegularExpression regExpr("[0-9a-fA-F]");
+    QRegularExpressionMatch match = regExpr.match(resValStr, 0, QRegularExpression::NormalMatch);
+
+    if(!match.hasMatch())
+    {
+        msg.setText("Неверный ввод!");
+        msg.exec();
+    }
+    else
+    {
+        bool bStatus = false;
+        int resVal = resValStr.toUInt(&bStatus, 16);
+        if(resVal > 255)
+        {
+            msg.setText("Слишком большое число! (>255)");
+            msg.exec();
+        }
+        else
+        {
+            ui->daliDataSetSlider->setValue(resVal);
+            ui->dataDecEdit->setText(QString::number(resVal));
+        }
+    }
 }
 
 uint8_t CommandSelector::getValue()

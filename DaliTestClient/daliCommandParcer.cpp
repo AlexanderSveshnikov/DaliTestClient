@@ -319,9 +319,33 @@ void daliCommandParcer::explainReply(uint16_t commandId, uint8_t reply, QString*
     }
 }
 
+void daliCommandParcer::spec207ParseOperatMode(uint8_t reply, QString* resStr)
+{
+    QString statusText = "Operating Mode:\r\n";
+    if(reply & 0x01)
+       statusText += "PWM mode active\r\n";
+    if(reply & 0x02)
+       statusText += "AM mode active\r\n";
+    if(reply & 0x04)
+       statusText += "output is current controlled\r\n";
+    if(reply & 0x08)
+       statusText += "high current pulse mode is active\r\n";
+    if(reply & 0x10)
+       statusText += "non-logarithmic dimming curve active\r\n";
+    *resStr = statusText;
+}
+
 void daliCommandParcer::explainLedLampRpl(uint16_t commandId, uint8_t reply, QString* resStr)
 {
-
+    switch(commandId)
+    {
+        case SPEC_207_QUERY_OPERATING_MODE:
+            spec207ParseOperatMode(reply, resStr);
+            break;
+        default:
+            *resStr = "";
+            break;
+    }
 }
 
 void daliCommandParcer::explainIncandescentLampRpl(uint16_t commandId, uint8_t reply, QString* resStr)
@@ -499,11 +523,124 @@ void daliCommandParcer::explainColourControlRpl(uint16_t commandId, uint8_t repl
     }
 }
 
+void daliCommandParcer::spec202ParseSelectedVariable(uint16_t reply, QString* resStr)
+{
+    QString statusText;
+    //if DTR0 = 0x09 (hardWiredSwitchStatus)
+    if(reply & 0x01)
+        statusText += "Hardwired switch supported\r\n";
+    if(reply & 0x02)
+        statusText += "Hardwired switch operation enabled\r\n";
+
+    *resStr = statusText;
+}
+
+void daliCommandParcer::spec202ParseEmergencyStatus(uint16_t reply, QString* resStr)
+{
+    QString statusText = "Emergency status:\r\n";
+    if(reply & 0x01)
+        statusText += "Inhibit Mode Active\r\n";
+    if(reply & 0x02)
+        statusText += "Function test done and result available\r\n";
+    if(reply & 0x04)
+        statusText += "Duration test done and result available\r\n";
+    if(reply & 0x08)
+        statusText += "Battery charged\r\n";
+    if(reply & 0x10)
+        statusText += "Function test pending\r\n";
+    if(reply & 0x20)
+        statusText += "Duration test pending\r\n";
+    if(reply & 0x40)
+        statusText += "Identify active\r\n";
+    if(reply & 0x80)
+        statusText += "Physical selection active\r\n";
+    *resStr = statusText;
+}
+void daliCommandParcer::spec202ParseEmergencyMode(uint16_t reply, QString* resStr)
+{
+    QString statusText = "Emergency mode:\r\n";
+    if(reply & 0x01)
+        statusText += "Rest Mode Active\r\n";
+    if(reply & 0x02)
+        statusText += "Normal mode active\r\n";
+    if(reply & 0x04)
+        statusText += "Emergency mode active\r\n";
+    if(reply & 0x08)
+        statusText += "Extended emergency mode active\r\n";
+    if(reply & 0x10)
+        statusText += "Mode \"Function test in progress\" active\r\n";
+    if(reply & 0x20)
+        statusText += "Mode \"Duration test in progress\" active\r\n";
+    if(reply & 0x40)
+        statusText += "Hardwired inhibit input active\r\n";
+    if(reply & 0x80)
+        statusText += "Hardwired switch is ON\r\n";
+    *resStr = statusText;
+}
+
+void daliCommandParcer::spec202ParseFeatures(uint16_t reply, QString* resStr)
+{
+    QString statusText = "Emergency Features:\r\n";
+    if(reply & 0x01)
+        statusText += "Integral emergency control gear\r\n";
+    if(reply & 0x02)
+        statusText += "Maintained control gear - non controllable (type C)\r\n";
+    if(reply & 0x04)
+        statusText += "Maintained control gear - controllable (type A or B)\r\n";
+    if(reply & 0x08)
+        statusText += "Auto test capability\r\n";
+    if(reply & 0x10)
+        statusText += "Configurable emergency level\r\n";
+    if(reply & 0x20)
+        statusText += "Hardwired inhibit input supported\r\n";
+    if(reply & 0x40)
+        statusText += "Physical selection supported\r\n";
+    if(reply & 0x80)
+        statusText += "Relight in rest mode supported\r\n";
+    *resStr = statusText;
+}
+
+void daliCommandParcer::spec202ParseFailureStatus(uint16_t reply, QString* resStr)
+{
+    QString statusText = "Emergency Failure Status:\r\n";
+    if(reply & 0x01)
+        statusText += "Emergency control gear failure\r\n";
+    if(reply & 0x02)
+        statusText += "Battery duration failure\r\n";
+    if(reply & 0x04)
+        statusText += "Battery failure\r\n";
+    if(reply & 0x08)
+        statusText += "Emergency lamp failure\r\n";
+    if(reply & 0x10)
+        statusText += "Function test max. delay exceeded\r\n";
+    if(reply & 0x20)
+        statusText += "Duration test max. delay exceeded\r\n";
+    if(reply & 0x40)
+        statusText += "Function test failed\r\n";
+    if(reply & 0x80)
+        statusText += "Duration test failed\r\n";
+    *resStr = statusText;
+}
+
 void daliCommandParcer::explainEmergLightningRpl(uint16_t commandId, uint8_t reply, QString* resStr)
 {
     switch(commandId)
     {
-        ///TODO: place individual parsers here
+        case SPEC_202_QUERY_SELECTED_VARIABLE:
+            spec202ParseSelectedVariable(reply, resStr); //depends on DTR0 content
+            break;
+        case SPEC_202_QUERY_EMERGENCY_STATUS:
+            spec202ParseEmergencyStatus(reply, resStr);
+            break;
+        case SPEC_202_QUERY_EMERGENCY_MODE:
+             spec202ParseEmergencyMode(reply, resStr);
+            break;
+        case SPEC_202_QUERY_FEATURES:
+            spec202ParseFeatures(reply, resStr);
+            break;
+        case SPEC_202_QUERY_FAILURE_STATUS:
+            spec202ParseFailureStatus(reply, resStr);
+        break;
         default:
             *resStr = "spec 202 reply:" + QString::number(reply);
             break;

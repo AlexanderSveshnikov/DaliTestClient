@@ -44,6 +44,39 @@
 #define QUERY_RANDOM_ADDR_L                 196
 #define READ_MEMORY_LOCATION                197
 
+#define SPEC_202_REST                               224
+#define SPEC_202_INHIBIT                            225
+#define SPEC_202_RE_LIGHT_RESET_INHIBIT             226
+#define SPEC_202_REQUEST_FUNCTION_TEST              227
+#define SPEC_202_REQUEST_DURATION_TEST              228
+#define SPEC_202_STOP_TEST                          229
+#define SPEC_202_RESET_FUNCTION_TEST_DONE_FLAG      230
+#define SPEC_202_RESET_DURATION_TEST_DONE_FLAG      231
+#define SPEC_202_RESET_LAMP_TIME                    232
+#define SPEC_202_STORE_DTR_AS_EMERGENCY_LEVEL       233
+#define SPEC_202_STORE_TEST_DELAY_TIME_HIGH_BYTE    234
+#define SPEC_202_STORE_TEST_DELAY_TIME_LOW_BYTE     235
+#define SPEC_202_STORE_FUNCTION_TEST_INTERVAL       236
+#define SPEC_202_STORE_DURATION_TEST_INTERVAL       237
+#define SPEC_202_STORE_TEST_EXECUTION_TIMEOUT       238
+#define SPEC_202_STORE_PROLONG_TIME                 239
+#define SPEC_202_START_IDENTIFICATION               240
+#define SPEC_202_QUERY_BATTERY_CHARGE               241
+#define SPEC_202_QUERY_SELECTED_VARIABLE            242
+#define SPEC_202_QUERY_DURATION_TEST_RESULT         243
+#define SPEC_202_QUERY_LAMP_EMERGENCY_TIME          244
+#define SPEC_202_QUERY_LAMP_TOTAL_OPERATION_TIME    245
+#define SPEC_202_QUERY_EMERGENCY_LEVEL              246
+#define SPEC_202_QUERY_EMERGENCY_PHYS_MIN_LEVEL     247
+#define SPEC_202_QUERY_EMERGENCY_PHYS_MAX_LEVEL     248
+#define SPEC_202_QUERY_RATED_DURATION               249
+#define SPEC_202_QUERY_EMERGENCY_MODE               250
+#define SPEC_202_QUERY_FEATURES                     251
+#define SPEC_202_QUERY_FAILURE_STATUS               252
+#define SPEC_202_QUERY_EMERGENCY_STATUS             253
+#define SPEC_202_PEFORM_DTR_SELECTED_FUNCTION       254
+#define SPEC_202_QUERY_EXTENDED_VERSION_NUMBER      255
+
 #define SPEC_207_REFERENCE_SYSTEM_POWER              224
 #define SPEC_207_ENABLE_CURRENT_PROTECTOR            225
 #define SPEC_207_DISABLE_CURRENT_PROTECTOR           226
@@ -140,6 +173,7 @@ private:
     void parseStatus(uint8_t status, QString* resStr);
     void parseFadeTimeRate(uint8_t time_rate, QString* resStr);
     void parseDeviceType(uint8_t devType, QString* resStr);
+    void spec207ParseOperatMode(uint8_t reply, QString* resStr);
     void explainLedLampRpl(uint16_t commandId, uint8_t reply, QString* resStr);
     void explainIncandescentLampRpl(uint16_t commandId, uint8_t reply, QString* resStr);
     void spec209ParseFeaturesStatus(uint16_t reply, QString* resStr);
@@ -148,6 +182,11 @@ private:
     void spec209ParseRGBWAFControl(uint16_t reply, QString* resStr);
     void spec209ParseColourValue(uint16_t reply, QString* resStr);
     void explainColourControlRpl(uint16_t commandId, uint8_t reply, QString* resStr);
+    void spec202ParseSelectedVariable(uint16_t reply, QString* resStr);
+    void spec202ParseEmergencyStatus(uint16_t reply, QString* resStr);
+    void spec202ParseEmergencyMode(uint16_t reply, QString* resStr);
+    void spec202ParseFeatures(uint16_t reply, QString* resStr);
+    void spec202ParseFailureStatus(uint16_t reply, QString* resStr);
     void explainEmergLightningRpl(uint16_t commandId, uint8_t reply, QString* resStr);
     struct
     {
@@ -313,6 +352,50 @@ private:
         {QUERY_RANDOM_ADDR_M, false, false, false, true, false},   //QUERY RANDOM ADDRESS (M)
         {QUERY_RANDOM_ADDR_L, false, false, false, true, false},   //QUERY RANDOM ADDRESS (L)
         {READ_MEMORY_LOCATION, true, true, false, true, false},     //READ MEMORY LOCATION (DTR1, DTR0)
+    };
+    //Application specific commands (SPEC. 202)
+struct
+    {
+        int cmdNum;
+        bool dtr0;
+        bool dtr1;
+        bool dtr2;
+        bool answer;
+        bool sendTwice;
+    }extendedCmdsSpec202ConvTab[32] =
+    {
+        {SPEC_202_REST, false, false, false, false, true},                              //224
+        {SPEC_202_INHIBIT, false, false, false, false, true},                           //225
+        {SPEC_202_RE_LIGHT_RESET_INHIBIT, false, false, false, false, true},            //226
+        {SPEC_202_REQUEST_FUNCTION_TEST, false, false, false, false, true},             //227
+        {SPEC_202_REQUEST_DURATION_TEST, false, false, false, false, true},             //228
+        {SPEC_202_STOP_TEST, false, false, false, false, true},                         //229
+        {SPEC_202_RESET_FUNCTION_TEST_DONE_FLAG, false, false, false, false, true},     //230
+        {SPEC_202_RESET_DURATION_TEST_DONE_FLAG, false, false, false, false, true},     //231
+        {SPEC_202_RESET_LAMP_TIME, false, false, false, false, true},                   //232
+        {SPEC_202_STORE_DTR_AS_EMERGENCY_LEVEL, false, false, false, false, true},      //233
+        {SPEC_202_STORE_TEST_DELAY_TIME_HIGH_BYTE, false, false, false, false, true},   //234
+        {SPEC_202_STORE_TEST_DELAY_TIME_LOW_BYTE, false, false, false, false, true},    //235
+        {SPEC_202_STORE_FUNCTION_TEST_INTERVAL, false, false, false, false, true},      //236
+        {SPEC_202_STORE_DURATION_TEST_INTERVAL, false, false, false, false, true},      //237
+        {SPEC_202_STORE_TEST_EXECUTION_TIMEOUT, false, false, false, false, true},      //238
+        {SPEC_202_STORE_PROLONG_TIME, false, false, false, false, true},                //239
+        {SPEC_202_START_IDENTIFICATION, false, false, false, false, false},             //240
+        {SPEC_202_QUERY_BATTERY_CHARGE, false, false, false, true, false},              //241
+        {SPEC_202_QUERY_SELECTED_VARIABLE, false, false, false, true, false},           //242
+        {SPEC_202_QUERY_DURATION_TEST_RESULT, false, false, false, true, false},        //243
+        {SPEC_202_QUERY_LAMP_EMERGENCY_TIME, false, false, false, true, false},         //244
+        {SPEC_202_QUERY_LAMP_TOTAL_OPERATION_TIME, false, false, false, true, false},   //245
+        {SPEC_202_QUERY_EMERGENCY_LEVEL, false, false, false, true, false},             //246
+        {SPEC_202_QUERY_EMERGENCY_PHYS_MIN_LEVEL, false, false, false, true, false},    //247
+        {SPEC_202_QUERY_EMERGENCY_PHYS_MAX_LEVEL, false, false, false, true, false},    //248
+        {SPEC_202_QUERY_RATED_DURATION, false, false, false, true, false},              //249
+        {SPEC_202_QUERY_EMERGENCY_MODE, false, false, false, true, false},              //250
+        {SPEC_202_QUERY_FEATURES, false, false, false, true, false},                    //251
+        {SPEC_202_QUERY_FAILURE_STATUS, false, false, false, true, false},              //252
+        {SPEC_202_QUERY_EMERGENCY_STATUS, false, false, false, true, false},            //253
+        {SPEC_202_PEFORM_DTR_SELECTED_FUNCTION, false, false, false, true, false},      //254
+        {SPEC_202_QUERY_EXTENDED_VERSION_NUMBER, false, false, false, true, false},     //255
     };
         //Application specific commands (SPEC. 207)
         //Every configuration command (224 to 228) shall be received a second time within 100 ms before it is executed

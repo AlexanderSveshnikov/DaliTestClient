@@ -5,6 +5,7 @@
 #include <QLineEdit>
 #include <QComboBox>
 #include <QList>
+#include <QMessageBox>
 
 #include "daliCommandParcer.h"
 
@@ -160,6 +161,8 @@ signals:
 private slots:
     void updateDaliDataSetSlider(int sliderVal);
     void extCmdsSpecSelChanged();
+    void dataDecEditTextChanged();
+    void dataHexEditTextChanged();
 };
 
 #endif // COMMANDSELECTOR_H

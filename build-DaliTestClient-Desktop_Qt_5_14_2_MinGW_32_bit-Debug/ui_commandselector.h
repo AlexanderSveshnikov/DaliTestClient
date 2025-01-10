@@ -139,6 +139,7 @@ public:
 
         dataDecEdit = new QLineEdit(verticalLayoutWidget);
         dataDecEdit->setObjectName(QString::fromUtf8("dataDecEdit"));
+        dataDecEdit->setMaxLength(3);
 
         currenLayout_4->addWidget(dataDecEdit);
 
